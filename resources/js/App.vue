@@ -2,14 +2,21 @@
 	<div>
 		<app-sidebar v-if="isAuth" />
 
-		<router-view></router-view>
+		<div class="c-wrapper">
+			<app-header v-if="isAuth" />
+			
+			<router-view></router-view>
 
-		<app-footer v-if="isAuth" />
+			<app-footer v-if="isAuth" />
+
+		</div >
+
 	</div>
 </template>
 <script>
 	import { mapState, mapGetters } from 'vuex'
 	import Sidebar from './components/Sidebar.vue'
+	import Header from './components/Header.vue'
 	import Footer from './components/Footer.vue'
 	export default {
 		computed: {
@@ -18,7 +25,8 @@
 		},
 		components: {
 			'app-sidebar': Sidebar,
-			'app-footer' : Footer
+			'app-footer' : Footer,
+			'app-header' : Header
 		}
 	}
 </script>

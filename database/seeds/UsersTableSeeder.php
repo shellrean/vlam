@@ -17,7 +17,7 @@ class UsersTableSeeder extends Seeder
             'name' 		=> 'Shellrean Co',
             'email' 	=> 'admin@shellrean.xyz',
             'email_verified_at' => now(),
-            'password' 	=> 'secret',
+            'password' 	=> bcrypt('secret'),
             'role' 		=> 0
         ]);
     }

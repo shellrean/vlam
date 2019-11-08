@@ -4,6 +4,8 @@ import Home from './pages/Home.vue'
 import Login from './pages/Login.vue'
 import store from './store.js'
 
+import Setting from './pages/referensi/Setting.vue'
+
 
 Vue.use(Router)
 
@@ -20,6 +22,12 @@ const router = new Router({
 			path: '/login',
 			name: 'login',
 			component: Login
+		},
+		{
+			path: '/Setting',
+			name: 'setting',
+			component: Setting,
+			meta: { requiresAuth: true, title: 'Setting'}
 		}
 	]
 })

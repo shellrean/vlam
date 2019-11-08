@@ -3,7 +3,7 @@ import router from './router.js'
 import store from './store.js'
 import App from './App.vue'
 
-import CoreuiVue from '@coreui/vue'
+import CoreuiVue from '@coreui/coreui'
 
 Vue.config.performance = true
 Vue.use(CoreuiVue)

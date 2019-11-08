@@ -15,12 +15,12 @@ const actions = {
 		return new Promise((resolve, reject) => {
 			$axios.post('/login', payload)
 			.then((response) => {
-				if (response.data.state == 'success') {
+				if (response.data.status == 'success') {
 					localStorage.setItem('token',response.data.data)
 					commit('SET_TOKEN',response.data.data, { root: true })
 				}
 				else {
-					commit('SET_ERRORS', { invalid: 'Email/Password salah' } , { root: ture})
+					commit('SET_ERRORS', { invalid: 'Email/Password salah' } , { root: true })
 				}
 				resolve(response.data)
 			})
