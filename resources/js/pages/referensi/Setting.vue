@@ -12,12 +12,14 @@
             				<div class="card-body">
             					<div class="form-group">
             						<label>Tahun ajaran</label>
-            						<select v-model="data.periode" class="form-control select2">
-            							<option>1</option>
-            							<option>2</option>
+            						<select v-model="reference.periode" class="form-control select2">
+            							<option v-for="ajar in ajaran" :value="ajar.value">{{ ajar.value }}</option>
             						</select>
             					</div>
-            				</div>
+                                <div class="form-group">
+                                    <button class="btn btn-primary" @click.prevent="submit">Simpan</button>
+                                </div>
+            				</div> 
             			</div>
             		</div>
             	</div>
@@ -27,13 +29,32 @@
     </div>
 </template>
 <script>
+    import { mapState, mapMutations, mapActions } from 'vuex'
 	export default {
-		data() {
-			return {
-				data: {
-					periode: ''
-				}
-			}
-		}
+        computed: {
+            ...mapState(['errors']),
+            ...mapState('reference', {
+                reference: state => state.reference,
+                ajaran: state => state.ajaran
+            })
+        },
+        mounted() {
+            this.getSetting()
+            this.getAjaranSelect()
+        },
+        methods: {
+            ...mapActions('reference', ['getAjaranSelect','getSetting','submitSetting']),
+            submit() {
+                this.submitSetting()
+                .then(() => {
+                    this.$notify({
+                      group: 'foo',
+                      title: 'Sukses',
+                      type: 'success',
+                      text: 'Konfigurasi berhasil disimpan.'
+                    })
+                })
+            }
+        }
 	}
 </script>

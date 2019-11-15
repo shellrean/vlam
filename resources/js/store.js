@@ -3,13 +3,19 @@ import Vuex from 'vuex'
 
 import auth from './stores/auth.js'
 import user from './stores/user.js'
+import reference from './stores/reference.js'
+import banksoal from './stores/banksoal.js'
+import soal from './stores/soal.js'
 
 Vue.use(Vuex)
 
 const store = new Vuex.Store({
 	modules: {
 		auth,
-		user
+		user,
+		reference,
+		banksoal,
+		soal
 	},
 	state: {
 		token: localStorage.getItem('token'),

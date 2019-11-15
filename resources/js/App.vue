@@ -1,5 +1,6 @@
 <template>
 	<div>
+		<notifications group="foo" />
 		<app-sidebar v-if="isAuth" />
 
 		<div class="c-wrapper">
@@ -18,6 +19,7 @@
 	import Sidebar from './components/Sidebar.vue'
 	import Header from './components/Header.vue'
 	import Footer from './components/Footer.vue'
+
 	export default {
 		computed: {
 			...mapState(['token']),
@@ -26,7 +28,7 @@
 		components: {
 			'app-sidebar': Sidebar,
 			'app-footer' : Footer,
-			'app-header' : Header
+			'app-header' : Header,
 		}
 	}
 </script>

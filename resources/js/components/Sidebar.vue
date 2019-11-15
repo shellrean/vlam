@@ -16,6 +16,20 @@
             <li class="c-sidebar-nav-item">
               <router-link class="c-sidebar-nav-link" to="/setting"> <span class="c-sidebar-nav-icon"></span>Setting</router-link>
             </li>
+            <li class="c-sidebar-nav-item">
+              <router-link class="c-sidebar-nav-link" to="/pegawai"> <span class="c-sidebar-nav-icon"></span>Pegawai</router-link>
+            </li>
+          </ul>
+        </li>
+        <li class="c-sidebar-nav-title">Ujian</li>
+        <li class="c-sidebar-nav-item c-sidebar-nav-dropdown">
+          <a class="c-sidebar-nav-link c-sidebar-nav-dropdown-toggle" href="#">
+            <i class="c-sidebar-nav-icon cui-star"></i> Soal
+          </a>
+          <ul class="c-sidebar-nav-dropdown-items">
+            <li class="c-sidebar-nav-item">
+              <router-link class="c-sidebar-nav-link" to="/banksoal"> <span class="c-sidebar-nav-icon"></span>Banksoal</router-link>
+            </li>
           </ul>
         </li>
       </ul>

@@ -14,3 +14,10 @@ use Illuminate\Http\Request;
 */
 
 Route::post('/login', 'Auth\LoginController@login');
+
+Route::group(['middleware' => 'auth:api'], function() {
+	Route::get('/settings', 'API\ReferenceController@setting');
+	Route::post('/settings', 'API\ReferenceController@storeSetting');
+
+	Route::resource('/banksoals', 'API\BanksoalController');
+});
