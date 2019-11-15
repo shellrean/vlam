@@ -24,7 +24,7 @@
         <li class="c-sidebar-nav-title">Ujian</li>
         <li class="c-sidebar-nav-item c-sidebar-nav-dropdown">
           <a class="c-sidebar-nav-link c-sidebar-nav-dropdown-toggle" href="#">
-            <i class="c-sidebar-nav-icon cui-star"></i> Soal
+            <i class="c-sidebar-nav-icon cui-screen-smartphone"></i> Soal
           </a>
           <ul class="c-sidebar-nav-dropdown-items">
             <li class="c-sidebar-nav-item">

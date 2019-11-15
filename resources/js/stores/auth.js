@@ -18,6 +18,7 @@ const actions = {
 				if (response.data.status == 'success') {
 					localStorage.setItem('token',response.data.data)
 					commit('SET_TOKEN',response.data.data, { root: true })
+					commit('SET_ROLE',response.data.data.role, { root: true })
 				}
 				else {
 					commit('SET_ERRORS', { invalid: 'Email/Password salah' } , { root: true })

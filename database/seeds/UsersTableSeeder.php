@@ -3,6 +3,7 @@
 use Illuminate\Database\Seeder;
 
 use App\User;
+use App\Peserta;
 
 class UsersTableSeeder extends Seeder
 {

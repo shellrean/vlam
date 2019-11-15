@@ -1,14 +1,14 @@
 <template>
 	<div>
 		<notifications group="foo" />
-		<app-sidebar v-if="isAuth" />
+		<app-sidebar v-if="isAuth && isAdmin"/>
 
 		<div class="c-wrapper">
-			<app-header v-if="isAuth" />
+			<app-header v-if="isAuth && isAdmin" />
 			
 			<router-view></router-view>
 
-			<app-footer v-if="isAuth" />
+			<app-footer v-if="isAuth && isAdmin" />
 
 		</div >
 
@@ -23,7 +23,7 @@
 	export default {
 		computed: {
 			...mapState(['token']),
-			...mapGetters(['isAuth'])
+			...mapGetters(['isAuth','isAdmin'])
 		},
 		components: {
 			'app-sidebar': Sidebar,

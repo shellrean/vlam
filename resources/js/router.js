@@ -13,12 +13,45 @@ import IndexBanksoal from './pages/banksoal/Index.vue'
 import DataBanksoal from './pages/banksoal/Banksoal.vue'
 import SoalBanksoal from './pages/banksoal/SoalBanksoal.vue'
 
+import LoginUjian from './pages/ujian/LoginUjian.vue'
+import Ujian from './pages/ujian/Ujian.vue'
+import Kerjakan from './pages/ujian/Kerjakan.vue'
+import UjianList from './pages/ujian/UjianList.vue'
+import IndexUjian from './pages/ujian/Index.vue'
+
 
 Vue.use(Router)
 
 const router = new Router({
 	mode: 'history',
 	routes: [
+		{
+			path: '/ujian',
+			component: IndexUjian,
+			meta: { requiresAuth: true },
+			children: [
+				{
+					path: 'list',
+					name: 'ujian.list',
+					component: UjianList
+				}
+			]
+		},
+		{
+			path: '/login_ujian',
+			name: 'login_ujian',
+			component: LoginUjian,
+		},
+		{
+			path: '/ujian',
+			name: 'ujian',
+			component: Ujian
+		},
+		{
+			path: '/kerjakan',
+			name: 'kerjakan',
+			component: Kerjakan
+		},
 		{
 			path: '/',
 			name: 'home',

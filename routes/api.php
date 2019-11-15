@@ -20,4 +20,9 @@ Route::group(['middleware' => 'auth:api'], function() {
 	Route::post('/settings', 'API\ReferenceController@storeSetting');
 
 	Route::resource('/banksoals', 'API\BanksoalController');
+	Route::get('/banksoals/{id}', 'API\SoalController@showByBanksoal');
+	Route::get('/ujian/{id}','API\UjianController@getsoal');
+	Route::post('/ujian','API\UjianController@store');
+	Route::get('/ujian/jawaban/{id}', 'API\UjianController@getJawabanPeserta');
+	Route::get('/ujian/list', 'API\UjianController@getListUjian');
 });

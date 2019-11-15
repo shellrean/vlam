@@ -46,6 +46,11 @@ return [
             'provider' => 'users',
             'hash' => false,
         ],
+
+        'peserta'  => [
+          'driver'  => 'token',
+          'provider' => 'pesertas',
+        ],
     ],
 
     /*
@@ -69,6 +74,11 @@ return [
         'users' => [
             'driver' => 'eloquent',
             'model' => App\User::class,
+        ],
+
+        'pesertas' => [
+            'driver' => 'eloquent',
+            'model'  => App\Peserta::class,
         ],
 
         // 'users' => [

@@ -11,7 +11,7 @@
     			<div class="card-body">
     				<b-table striped hover bordered small :items="banksoals.data" :fields="fields" show-empty>
                        <template v-slot:cell(actions)="row">
-                            <router-link :to="{ name: 'banksoals.soal', params: {id: row.item.id} }" class="btn btn-success btn-sm"><i class="cui-pencil"></i></router-link>
+                            <router-link :to="{ name: 'banksoals.soal', params: {id: row.item.id} }" class="btn btn-success btn-sm"><i class="cui-briefcase"></i></router-link>
                         </template>
                     </b-table>
                     <div class="row">
