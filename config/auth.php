@@ -50,6 +50,7 @@ return [
         'peserta'  => [
           'driver'  => 'token',
           'provider' => 'pesertas',
+          'hash'       => false
         ],
     ],
 

@@ -6,7 +6,7 @@
 		<div class="c-wrapper">
 			<app-header v-if="isAuth && isAdmin" />
 			
-			<router-view></router-view>
+			<router-view />
 
 			<app-footer v-if="isAuth && isAdmin" />
 
@@ -28,7 +28,7 @@
 		components: {
 			'app-sidebar': Sidebar,
 			'app-footer' : Footer,
-			'app-header' : Header,
+			'app-header' : Header
 		}
 	}
 </script>

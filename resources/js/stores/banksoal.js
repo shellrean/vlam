@@ -4,7 +4,8 @@ const state = () => ({
 	banksoals: [],
 	page: 1,
 	id: '',
-	ujian: []
+	ujian: [],
+	
 })
 
 const mutations = {
@@ -40,6 +41,15 @@ const actions = {
 				commit('ASSIGN_SOAL_UJIAN', response.data)
 				resolve(response.data)
 			})
+		})
+	},
+	ujianHariIni({ commit, state }, payload) {
+		return new Promise(( resolve, reject) => {
+			$axios.get(`/banksoal/getday`)
+			.then( (response) => {
+				commit('UJIAN_HARI_INI',response.data)
+				resolve(response.data)
+			}) 
 		})
 	}
 }

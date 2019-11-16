@@ -39,7 +39,7 @@ const actions = {
 	},
 	getUjianList({ commit }, payload) {
 		return new Promise((resolve, reject) => {
-			$axios.get(`/ujian/list`)
+			$axios.post(`/ujian/daftar`)
 			.then((response) => {
 				commit('ASSIGN_DATA_LIST', response.data)
 				resolve(response.data)

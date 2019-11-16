@@ -4,9 +4,9 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class JawabanSoal extends Model
+class Kelas extends Model
 {
     protected $fillable = [
-    	'soal_id','text_jawaban','correct'
+    	'tingkat','nama'
     ];
 }

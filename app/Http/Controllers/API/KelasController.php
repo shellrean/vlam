@@ -4,12 +4,12 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Http\Resources\BanksoalCollection;
-use App\Banksoal;
+
+use App\Kelas;
 
 use Illuminate\Support\Facades\Validator;
 
-class BanksoalController extends Controller
+class KelasController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -18,13 +18,9 @@ class BanksoalController extends Controller
      */
     public function index()
     {
-        $banksoal = Banksoal::orderBy('created_at', 'DESC');
-        if (request()->q != '') {
-            $banksoal = $banksoal->where('kode_banksoal', 'LIKE', '%'. request()->q.'%');
-        }
+        $all = Kelas::paginate(10);
 
-        $banksoal = $banksoal->paginate(10);
-        return new BanksoalCollection($banksoal);
+        return response()->json(['data' => $all]);
     }
 
     /**
@@ -36,28 +32,23 @@ class BanksoalController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'kode_banksoal'     => 'required|unique:banksoals,kode_banksoal',
-            'kelas_id'          => 'required|exists:kelas,id',
-            'matpel_id'         => 'required|exists:matpels,id',
-            'author'            => 'required|exists:users,id'
-        ]); 
+            'tingkat'       => 'required|int',
+            'nama'          => 'required'
+        ]);
 
-        if($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()],200);
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()],422);
         }
 
         $data = [
-            'kode_banksoal'     => $request->kode_banksoal,
-            'kelas_id'          => $request->kelas_id,
-            'matpel_id'         => $request->matpel_id,
-            'author'            => $request->author
+            'tingkat'       => $request->tingkat,
+            'nama'          => $request->nama
         ];
 
-        $res = Banksoal::create($data);
+        $res = Kelas::create($data);
 
-        return response()->json(['data' => $res]);
+        return response()->json(['data' => $request]);
     }
-
 
     /**
      * Display the specified resource.

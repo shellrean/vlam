@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 
 use App\Banksoal;
 use App\JawabanPeserta;
+use App\Jadwal;
 
 class UjianController extends Controller
 {
@@ -45,6 +46,8 @@ class UjianController extends Controller
 
     public function getListUjian()
     {
+        $data = Jadwal::with('banksoal')->where(['tanggal' => now()->format('Y-m-d')])->get();
         
+        return response()->json(['data' => $data]);
     }
 }

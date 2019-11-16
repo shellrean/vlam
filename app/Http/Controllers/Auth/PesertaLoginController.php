@@ -3,45 +3,35 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Foundation\Auth\AuthenticatesUsers;
-use Illuminate\Support\Facades\Auth;
-
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
+use App\Peserta;
+use Illuminate\Support\Facades\Validator;
+
 class PesertaLoginController extends Controller
 {
-    use AuthenticatesUsers;
-
-    protected $redirectTo = '/ujian';
-
-
-    public function __construct()
-    {
-      $this->middleware('guest')->except('logout');
-    }
 
     public function login(Request $request)
     {
-        $this->validate($request, [
+
+        $validator = Validator::make($request->all(), [
             'no_ujian'      => 'required|exists:pesertas,no_ujian',
             'password'      => 'required'
         ]);
 
-        $auth = $request->all();
-        if (Auth::guard('peserta')->attempt($auth)) {
-            auth()->user()->update(['api_token' => Str::random(40)]);
-            return response()->json(['status' => 'success', 'data' => auth()->user()->api_token],200);
+        if ($validator->fails()) {
+            return response()->json(['errors'=>$validator->errors()],422);
         }
 
-        return response()->json(['status' => 'failed']);
-    }
-    public function username()
-    {
-        return 'no_peserta';
-    }
-    protected function guard()
-    {
-        return Auth::guard('peserta');
+
+        $peserta = Peserta::where(['no_ujian' => $request->no_ujian,'password' => $request->password])->first();
+
+        if($peserta) {
+            $peserta->update(['api_token' => Str::random(80)]);
+            return response()->json(['status' => 'success', 'data' => $peserta],200);
+        }       
+
+        return response()->json(['status' => 'error']); 
     }
 }

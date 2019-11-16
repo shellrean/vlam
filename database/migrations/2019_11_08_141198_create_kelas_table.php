@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateBanksoalsTable extends Migration
+class CreateKelasTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,10 @@ class CreateBanksoalsTable extends Migration
      */
     public function up()
     {
-        Schema::create('banksoals', function (Blueprint $table) {
+        Schema::create('kelas', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('kode_banksoal',50);
-            $table->unsignedBigInteger('author');
-            $table->foreign('author')->references('id')->on('users')->onDelete('cascade');
+            $table->string('tingkat',10);
+            $table->string('nama');
             $table->timestamps();
         });
     }
@@ -29,6 +28,6 @@ class CreateBanksoalsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('banksoals');
+        Schema::dropIfExists('kelas');
     }
 }

@@ -3,11 +3,11 @@
 		<header style="background-color: #2c3e50;" class="headers">
 			<div class="group">
   	  			<div class="left py-2 px-4">
-  	  				<img src="img/brand/dki.png " width="65px">
+  	  				<img src="/img/brand/dki.png " width="65px">
   	  			</div>
 		  	  	<div class="right">
 		  	  		<table width="100%" border="0">   
-		     			<tr><td rowspan="3" width="90px" align="center"><img src="img/avatars/avatar.png" class="foto" ></td>
+		     			<tr><td rowspan="3" width="90px" align="center"><img src="/img/avatars/avatar.png" class="foto" ></td>
 						<td>Selamat datang peserta ujian</td></tr>
 						<tr><td><span class="user">Jangan lupa berdo'a </span></td></tr>
 					</table>
@@ -24,7 +24,7 @@
 			      	<div class="card-header">
 			          <table>
 			            <tr>
-			              <td><img src="img/brand/dki.png" width="40px"></td>
+			              <td><img src="/img/brand/dki.png" width="40px"></td>
 			              <td><h4 class="mx-2">Login peserta</h4></td>
 			            </tr>
 			          </table>
@@ -37,8 +37,8 @@
 						    <div class="input-group-prepend">
 						      <div class="input-group-text rounded-0"><i class="cui-user"></i></div>
 						    </div>
-						    <input type="text" class="form-control rounded-0" :class="{ 'is-invalid' : errors.email }" v-model="data.email" placeholder="No peserta" required>
-						    <div class="invalid-feedback" v-if="errors.email">{{ errors.email[0] }}</div>
+						    <input type="text" class="form-control rounded-0" :class="{ 'is-invalid' : errors.no_ujian }" v-model="data.no_ujian" placeholder="No peserta" required>
+						    <div class="invalid-feedback" v-if="errors.no_ujian">{{ errors.no_ujian[0] }}</div>
 						  </div>
 					    </div>
 					  </div>
@@ -88,14 +88,14 @@
 		data() {
 			return {
 				data: {
-					email: '',
+					no_ujian: '',
 					password: ''
 				}
 			}
 		},
 		created() {
 			if (this.isAuth) {
-				this.$router.push({ name: 'ujian' })
+				this.$router.push({ name: 'ujian.konfirm' })
 			}
 		},
 		computed: {
@@ -109,7 +109,7 @@
 				this.submit(this.data).then( () => {
 					if (this.isAuth) {
 						this.CLEAR_ERRORS()
-						this.$router.push({ name: 'ujian' })
+						this.$router.push({ name: 'ujian.konfirm' })
 					}
 				})
 			}

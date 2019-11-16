@@ -24,7 +24,7 @@
 		    		<div class="questionContainer" v-if="questionIndex<soals.data.pertanyaans.length" :key="questionIndex">
 		    			<p>{{ soals.data.pertanyaans[questionIndex].pertanyaan }}</p>
 		    			<b-form-group>
-					      <b-form-radio v-for="(jawab,index) in soals.data.pertanyaans[questionIndex].jawabans" v-model="selected"  :value="jawab.id" name="jawaban" @change="selectOption(index)"><span class="text-uppercase">{{ index | charIndex }}</span>. {{ jawab.text_jawaban }}</b-form-radio>
+					      <b-form-radio v-for="(jawab,index) in soals.data.pertanyaans[questionIndex].jawabans" :key="index" v-model="selected"  :value="jawab.id" name="jawaban" @change="selectOption(index)"><span class="text-uppercase">{{ index | charIndex }}</span>. {{ jawab.text_jawaban }}</b-form-radio>
 					    </b-form-group>
 		    		</div>
 		    	</div>
@@ -57,7 +57,6 @@
 	    created() {
 	        this.getUjian()
 	        this.getJawabanPeserta()
-	     	
 	    },
 		data() {
 			return {

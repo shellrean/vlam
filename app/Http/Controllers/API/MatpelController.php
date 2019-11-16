@@ -4,12 +4,12 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Http\Resources\BanksoalCollection;
-use App\Banksoal;
 
 use Illuminate\Support\Facades\Validator;
 
-class BanksoalController extends Controller
+use App\Matpel;
+
+class MatpelController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -18,13 +18,9 @@ class BanksoalController extends Controller
      */
     public function index()
     {
-        $banksoal = Banksoal::orderBy('created_at', 'DESC');
-        if (request()->q != '') {
-            $banksoal = $banksoal->where('kode_banksoal', 'LIKE', '%'. request()->q.'%');
-        }
+        $data = Matpel::paginate(10);
 
-        $banksoal = $banksoal->paginate(10);
-        return new BanksoalCollection($banksoal);
+        return response()->json(['data' => $data]);
     }
 
     /**
@@ -36,28 +32,23 @@ class BanksoalController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'kode_banksoal'     => 'required|unique:banksoals,kode_banksoal',
-            'kelas_id'          => 'required|exists:kelas,id',
-            'matpel_id'         => 'required|exists:matpels,id',
-            'author'            => 'required|exists:users,id'
-        ]); 
+            'kode_mapel'    => 'required|unique:matpels,kode_mapel',
+            'nama'          => 'required'
+        ]);
 
-        if($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()],200);
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()],422);
         }
 
         $data = [
-            'kode_banksoal'     => $request->kode_banksoal,
-            'kelas_id'          => $request->kelas_id,
-            'matpel_id'         => $request->matpel_id,
-            'author'            => $request->author
+            'kode_mapel'    => $request->kode_mapel,
+            'nama'          => $request->nama
         ];
 
-        $res = Banksoal::create($data);
+        $data = Matpel::create($data);
 
-        return response()->json(['data' => $res]);
+        return response()->json(['data' => $data]);
     }
-
 
     /**
      * Display the specified resource.

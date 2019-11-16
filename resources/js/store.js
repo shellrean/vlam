@@ -7,6 +7,7 @@ import reference from './stores/reference.js'
 import banksoal from './stores/banksoal.js'
 import soal from './stores/soal.js'
 import ujian from './stores/ujian.js'
+import jadwal from './stores/jadwal.js'
 
 Vue.use(Vuex)
 
@@ -17,7 +18,8 @@ const store = new Vuex.Store({
 		reference,
 		banksoal,
 		soal,
-		ujian
+		ujian,
+		jadwal
 	},
 	state: {
 		token: localStorage.getItem('token'),

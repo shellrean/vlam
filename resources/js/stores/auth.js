@@ -11,17 +11,21 @@ const mutations = {
 const actions = {
 	submit({ commit }, payload) {
 		localStorage.setItem('token',null)
+		localStorage.setItem('nama',null)
+		localStorage.setItem('no_ujian',null)
+
 		commit('SET_TOKEN',null,{ root: true } )
 		return new Promise((resolve, reject) => {
-			$axios.post('/login', payload)
+			$axios.post('/logedin', payload)
 			.then((response) => {
 				if (response.data.status == 'success') {
-					localStorage.setItem('token',response.data.data)
+					localStorage.setItem('token',response.data.data.api_token)
+					localStorage.setItem('nama',response.data.data.nama)
+					localStorage.setItem('no_ujian',response.data.data.no_ujian)
 					commit('SET_TOKEN',response.data.data, { root: true })
-					commit('SET_ROLE',response.data.data.role, { root: true })
 				}
 				else {
-					commit('SET_ERRORS', { invalid: 'Email/Password salah' } , { root: true })
+					commit('SET_ERRORS', { invalid: 'No ujian/Password salah' } , { root: true })
 				}
 				resolve(response.data)
 			})
