@@ -8,7 +8,6 @@
 		          <h4>Konfirmasi data peserta </h4>
 		        </div>
 		        <div class="card-body rounded-0 fade-in" v-if="jadwal && ujian">
-		          <div class="alert alert-danger rounded-0" v-if="!jadwal.mulai"><i class="cui-info"></i> &nbsp; Tidak ada jadwal ujian pada hari ini</div>
 		          <table class="table table-borderless">
 		          	<tr>
 		          		<td width="200px">No ujian</td>
@@ -32,6 +31,16 @@
 		          	</tr>
 		          </table>
 		        </div> 
+		        <div class="card-body rounded-0 fade-in" v-if="!ujian">
+		        	<div class="alert alert-info rounded-0"><i class="cui-info"></i> &nbsp; Tidak ada jadwal ujian pada hari ini</div>
+			          <table class="table table-borderless">
+			          	<tr>
+			          		<td width="200px">No ujian</td>
+			          		<td v-text="peserta.no_ujian"></td>
+			          	</tr>
+			          </table>
+			        </div>
+		        </div>
 		        <div class="card-footer">
 		        	
 		        </div>
@@ -78,9 +87,9 @@
 	      },
 	      dataUjianPeserta() {
 	      	this.getPesertaDataUjian({
-	      		jadwal_id :this.jadwal.id,
-	      		peserta_id : this.peserta.id,
-	   			lama	: this.jadwal.lama
+	      		jadwal_id 	:this.jadwal.id,
+	      		peserta_id 	: this.peserta.id,
+	   			lama		: this.jadwal.lama
 	      	})
 	      },
 	      resInv() {

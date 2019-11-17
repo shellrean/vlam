@@ -26,6 +26,7 @@ Route::group(['middleare' => 'peserta'], function() {
 	Route::post('/ujian/filled', 'API\UjianController@filled');
 	Route::post('/ujian/sisa-waktu', 'API\UjianController@sisaWaktu');
 	Route::post('/ujian/ujian-siswa-det', 'API\UjianController@detUjian');
+	Route::post('/ujian/ragu-ragu', 'API\UjianController@setRagu');
 
 });
 

@@ -16,7 +16,6 @@ class CreateBanksoalsTable extends Migration
         Schema::create('banksoals', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('kode_banksoal',50);
-            $table->unsignedBigInteger('kelas_id');
             $table->unsignedBigInteger('matpel_id');
             $table->unsignedBigInteger('author');
             $table->foreign('author')->references('id')->on('users')->onDelete('cascade');

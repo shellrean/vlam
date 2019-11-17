@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class JawabanPeserta extends Model
 {
     protected $fillable = [
-    	'banksoal_id','soal_id','jawab','iscorrect','peserta_id'
+    	'banksoal_id','soal_id','jawab','iscorrect','peserta_id','jadwal_id','ragu_ragu'
     ];
 
     public function soal()

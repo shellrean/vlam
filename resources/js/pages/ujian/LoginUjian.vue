@@ -15,11 +15,10 @@
 		  	</div>
 		</header>
 
-		<div class="alert alert-danger" v-if="errors.invalid">{{ errors.invalid }}</div>
+		<div class="alert alert-danger fade-in" v-if="errors.invalid">{{ errors.invalid }}</div>
 		<div class="container mt-100" style="margin-bottom: 100px">
-			<div class="row">
-			    <div class="col-3"></div>
-			    <div class="col-sm">
+			<div class="row justify-content-md-center">
+			    <div class="col-sm-6">
 			      <div class="card">
 			      	<div class="card-header">
 			          <table>
@@ -37,7 +36,7 @@
 						    <div class="input-group-prepend">
 						      <div class="input-group-text rounded-0"><i class="cui-user"></i></div>
 						    </div>
-						    <input type="text" class="form-control rounded-0" :class="{ 'is-invalid' : errors.no_ujian }" v-model="data.no_ujian" placeholder="No peserta" required>
+						    <input type="text" class="form-control rounded-0" :class="{ 'is-invalid' : errors.no_ujian }" v-model="data.no_ujian" placeholder="No peserta" required @keyup="clearError">
 						    <div class="invalid-feedback" v-if="errors.no_ujian">{{ errors.no_ujian[0] }}</div>
 						  </div>
 					    </div>
@@ -49,7 +48,7 @@
 						    <div class="input-group-prepend">
 						      <div class="input-group-text rounded-0"><i class="cui-lock-locked"></i></div>
 						    </div>
-						    <input type="password" class="form-control rounded-0" :class="{ 'is-invalid' : errors.password }"placeholder="Password" v-model="data.password" required>
+						    <input type="password" class="form-control rounded-0" :class="{ 'is-invalid' : errors.password }"placeholder="Password" v-model="data.password" required @keyup="clearError">
 						    <div class="invalid-feedback" v-if="errors.password">{{ errors.password[0] }} </div>
 						  </div>
 					    </div>
@@ -57,7 +56,6 @@
 					  <div class="form-group row">
 					  	<label for="inputPassword" class="col-sm-3 col-form-label">&nbsp;</label>
 					  	<div class="col-sm-9">
-					      <!-- <button type="button" class="btn btn-success btn-block doblockui rounded-0" @click.prevent="postLogin">LOGIN</button> -->
 					        <b-button variant="success" squared block  :disabled="isLoading" @click.prevent="postLogin">
 							    <b-spinner small type="grow" v-show="isLoading"></b-spinner>
 							    Login
@@ -70,7 +68,6 @@
 			        </div>
 			      </div>
 			    </div>
-			    <div class="col-3"></div>
 			</div>
 		</div>
 		<div class="fixed-bottom">
@@ -117,6 +114,9 @@
 						this.$router.push({ name: 'ujian.konfirm' })
 					}
 				})
+			},
+			clearError() {
+				this.CLEAR_ERRORS()
 			}
 		}
 	}

@@ -5,13 +5,23 @@
 		    <div class="card mt-5 rounded-0">
 		      <div class="kiri">
 		        <div class="card-header rounded-0">
-		          <h4>Penting untuk diingat </h4>
+		          <h4>Data ujian </h4>
 		        </div>
-		        <div class="card-body rounded-0">
-		          <h6 class="text-danger"><i class="cui-info"></i> &nbsp; No system is safe</h6>
-		          <p class="text-muted">
-		          	Kita hidup di dunia yang pentuh dengan masalah, jangan sampai menyontek termasuk masalah anda
-		          </p>
+		        <div class="card-body rounded-0" v-if="jadwal">
+		          <table class="table table-borderless">
+		          	<tr>
+		          		<td width="150px">Waktu ujian</td>
+		          		<td v-text="mulai"></td>
+		          	</tr>
+		          	<tr>
+		          		<td>Durasi</td>
+		          		<td v-text="durasi"></td>
+		          	</tr>	
+		          	<tr>
+		          		<td>Ujian ditutup</td>
+		          		<td v-text="jadwal.berakhir"></td>
+		          	</tr>
+		          </table>
 		        </div> 
 		        <div class="card-footer">
 		        	
@@ -24,7 +34,7 @@
 		  		<div class="card-body">
 				  	<div class="alert alert-warning rounded-0">
 				    	<i class="cui-bullhorn"></i>  
-				    	Tombol mulai disable sampai waktu ujian tiba.
+				    	Tombol "mulai" disable sampai waktu ujian tiba.
 				    </div>
 				    <button class="btn btn-block btn-danger rounded-0" @click="start" :disabled="disable">Mulai</button>
 				</div>
@@ -46,6 +56,7 @@ export default {
 			disable: true,
 			time: '',
 			starter: '',
+			durasi: ''
 		}
 	},
 	computed: {
@@ -59,13 +70,16 @@ export default {
 	    start() {
 	    	this.$router.push({ 
 	    		name: 'ujian.while', 
-	    		params: { banksoal: this.jadwal.banksoal_id, jadwal_id: this.jadwal.id } 
+	    		params: { 
+	    			banksoal: this.jadwal.banksoal_id, 
+	    			jadwal_id: this.jadwal.id 
+	    		} 
 	    	})
 	    },
 	    starTime() {
 			setInterval( () => {
 				this.time = new Date()
-			}, 3000 )
+			}, 1000 )
 		}
 	},
 	watch: {
@@ -84,7 +98,12 @@ export default {
 
 			const rest = new Date(ye,mo,da,h,i,s)
 
+			let sec_num = parseInt(this.jadwal.lama, 10)
+    		let hours   = Math.floor(sec_num / 3600)
+    		let minutes = Math.floor((sec_num - (hours * 3600)) / 60)
+
 			this.starter = rest
+			this.durasi = hours+' Jam '+minutes+' Menit'
 		},
 		time() {
 			if(this.starter < this.time) {

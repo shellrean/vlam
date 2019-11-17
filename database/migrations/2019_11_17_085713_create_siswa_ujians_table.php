@@ -17,9 +17,9 @@ class CreateSiswaUjiansTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('peserta_id');
             $table->unsignedBigInteger('jadwal_id');
-            $table->integer('mulai_ujian');
+            $table->string('mulai_ujian');
             $table->integer('sisa_waktu');
-            $table->integer('status_ujian',1);
+            $table->char('status_ujian');
 
             $table->foreign('peserta_id')->references('id')->on('pesertas')->onDelete('cascade');
             $table->foreign('jadwal_id')->references('id')->on('jadwals')->onDelete('cascade');

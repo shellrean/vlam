@@ -8640,7 +8640,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'IndexUjian',
   created: function created() {
-    this.peserta;
+    this.setPesertaDetail();
   },
   data: function data() {
     return {};
@@ -8650,7 +8650,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return state.pesertaDetail;
     }
   })),
-  methods: {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('user', ['setPesertaDetail']), {
     logout: function logout() {
       var _this = this;
 
@@ -8666,7 +8666,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         _this.$router.push('/login');
       });
     }
-  }
+  })
 });
 
 /***/ }),
@@ -8727,6 +8727,16 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'DataUjian',
@@ -8740,7 +8750,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       selected: '',
       patt: 17,
       sidebar: false,
-      ragu: 0,
+      ragu: '',
       time: 0
     };
   },
@@ -8776,25 +8786,29 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return hours + ':' + minutes + ':' + seconds;
     }
   }),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('banksoal', ['getUjian']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('ujian', ['submitJawaban', 'takeFilled', 'updateWaktuSiswa']), {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('banksoal', ['getUjian']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('ujian', ['submitJawaban', 'takeFilled', 'updateWaktuSiswa', 'updateRaguJawaban']), {
     getAllSoal: function getAllSoal() {
       this.getUjian(this.$route.params.banksoal).then(function (resp) {});
     },
     filledAllSoal: function filledAllSoal() {
       var payld = {
         peserta_id: this.peserta.id,
-        banksoal: this.soals.id
+        banksoal: this.$route.params.banksoal,
+        jadwal_id: this.$route.params.jadwal_id
       };
       this.takeFilled(payld).then(function (resp) {});
     },
     updateSisaWaktu: function updateSisaWaktu(time) {
       this.updateWaktuSiswa({
-        sisa_waktu: time
+        sisa_waktu: time,
+        peserta_id: this.peserta.id,
+        jadwal_id: this.$route.params.jadwal_id
       }).then(function (resp) {});
     },
     selectOption: function selectOption(index) {
       var fill = this.filleds[this.questionIndex];
       this.submitJawaban({
+        jadwal_id: this.$route.params.jadwal_id,
         banksoal_id: fill.banksoal_id,
         soal_id: fill.soal_id,
         jawab: this.filleds[this.questionIndex].soal.jawabans[index].id,
@@ -8803,9 +8817,30 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         index: this.questionIndex
       });
     },
+    raguRagu: function raguRagu(val) {
+      this.updateRaguJawaban({
+        jadwal_id: this.$route.params.jadwal_id,
+        banksoal: this.$route.params.banksoal,
+        soal_id: this.filleds[this.questionIndex].id,
+        ragu_ragu: val,
+        index: this.questionIndex,
+        peserta_id: this.peserta.id
+      });
+    },
     selesai: function selesai() {
       this.$router.push({
         name: 'ujian.selesai'
+      });
+    },
+    selesaiUjian: function selesaiUjian() {
+      this.$swal({
+        title: 'Kamu Yakin?',
+        text: "Tindakan ini akan menghapus secara permanent!",
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Iya, Lanjutkan!'
       });
     },
     prev: function prev() {
@@ -8836,9 +8871,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     questionIndex: function questionIndex() {
       this.selected = this.filleds[this.questionIndex].jawab;
+      this.ragu = this.filleds[this.questionIndex].ragu_ragu;
     },
     filleds: function filleds() {
       this.selected = this.filleds[this.questionIndex].jawab;
+      this.ragu = this.filleds[this.questionIndex].ragu_ragu;
     },
     detail: function detail(val) {
       var _this2 = this;
@@ -8851,6 +8888,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           _this2.selesai();
         }
       }, 5000);
+    },
+    ragu: function ragu(val) {
+      if (val == false) {
+        var set = 0;
+        this.raguRagu(set);
+      }
+
+      this.raguRagu(val);
     }
   }
 });
@@ -8873,9 +8918,6 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-//
-//
-//
 //
 //
 //
@@ -8993,6 +9035,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           });
         }
       });
+    },
+    clearError: function clearError() {
+      this.CLEAR_ERRORS();
     }
   })
 });
@@ -9015,6 +9060,15 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -9167,6 +9221,16 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'PrepareUjian',
@@ -9178,7 +9242,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     return {
       disable: true,
       time: '',
-      starter: ''
+      starter: '',
+      durasi: ''
     };
   },
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])('jadwal', {
@@ -9204,7 +9269,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       setInterval(function () {
         _this.time = new Date();
-      }, 3000);
+      }, 1000);
     }
   }),
   watch: {
@@ -9219,7 +9284,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var i = parseInt(splicer[1]);
       var s = parseInt(splicer[2]);
       var rest = new Date(ye, mo, da, h, i, s);
+      var sec_num = parseInt(this.jadwal.lama, 10);
+      var hours = Math.floor(sec_num / 3600);
+      var minutes = Math.floor((sec_num - hours * 3600) / 60);
       this.starter = rest;
+      this.durasi = hours + ' Jam ' + minutes + ' Menit';
     },
     time: function time() {
       if (this.starter < this.time) {
@@ -44105,277 +44174,218 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", [
-    _c("div", { staticClass: "card mt-5" }, [
-      _c(
-        "div",
-        { staticClass: "card-header" },
-        [
-          _vm._v("\n\t\t\t\tSOAL NO. \n\t\t    \t"),
-          _c(
-            "b-button",
-            {
-              attrs: {
-                variant: "primary",
-                size: "sm",
-                squared: "",
-                disabled: ""
-              }
-            },
-            [_vm._v(_vm._s(_vm.questionIndex + 1))]
-          ),
-          _vm._v(" "),
-          _c(
-            "b-button",
-            {
-              staticClass: "float-right",
-              attrs: {
-                variant: "outline-dark",
-                size: "sm",
-                squared: "",
-                disabled: ""
-              }
-            },
-            [_vm._v("Siwa waktu:  " + _vm._s(_vm.prettyTime))]
-          )
-        ],
-        1
-      ),
-      _vm._v(" "),
-      _vm.filleds
-        ? _c(
-            "div",
-            { staticClass: "card-body" },
-            [
-              _c("p", {
-                domProps: {
-                  innerHTML: _vm._s(
-                    _vm.filleds[_vm.questionIndex].soal.pertanyaan
-                  )
-                }
-              }),
-              _vm._v(" "),
-              _c(
-                "b-form-group",
-                _vm._l(_vm.filleds[_vm.questionIndex].soal.jawabans, function(
-                  jawab,
-                  index
-                ) {
-                  return _c(
-                    "b-form-radio",
-                    {
-                      key: index,
-                      attrs: { name: "jwb", value: jawab.id },
-                      on: {
-                        change: function($event) {
-                          return _vm.selectOption(index)
-                        }
-                      },
-                      model: {
-                        value: _vm.selected,
-                        callback: function($$v) {
-                          _vm.selected = $$v
-                        },
-                        expression: "selected"
-                      }
-                    },
-                    [
-                      _c("span", { staticClass: "text-uppercase" }, [
-                        _vm._v(_vm._s(_vm._f("charIndex")(index)))
-                      ]),
-                      _vm._v(". "),
-                      _c("span", {
-                        domProps: { innerHTML: _vm._s(jawab.text_jawaban) }
-                      })
-                    ]
-                  )
-                }),
-                1
-              )
-            ],
-            1
-          )
-        : _vm._e(),
-      _vm._v(" "),
-      _vm.filleds
-        ? _c(
-            "div",
-            { staticClass: "card-footer" },
-            [
-              _vm.questionIndex != 0
-                ? _c(
-                    "b-button",
-                    {
-                      attrs: { variant: "secondary", size: "md", squared: "" },
-                      on: {
-                        click: function($event) {
-                          return _vm.prev()
-                        }
-                      }
-                    },
-                    [
-                      _c("i", { staticClass: "cui-chevron-left" }),
-                      _vm._v("   Sebelumnya")
-                    ]
-                  )
-                : _vm._e(),
-              _vm._v(" "),
-              _c(
-                "b-button",
-                { attrs: { variant: "warning", squared: "" } },
-                [
-                  _c(
-                    "b-form-checkbox",
-                    {
-                      attrs: { size: "lg", value: "1" },
-                      model: {
-                        value: _vm.ragu,
-                        callback: function($$v) {
-                          _vm.ragu = $$v
-                        },
-                        expression: "ragu"
-                      }
-                    },
-                    [_vm._v("Ragu ragu")]
-                  )
-                ],
-                1
-              ),
-              _vm._v(" "),
-              _vm.questionIndex + 1 != _vm.filleds.length
-                ? _c(
-                    "b-button",
-                    {
-                      staticClass: "float-right",
-                      attrs: { variant: "success", size: "md", squared: "" },
-                      on: {
-                        click: function($event) {
-                          return _vm.next()
-                        }
-                      }
-                    },
-                    [
-                      _vm._v("Selanjutnya   "),
-                      _c("i", { staticClass: "cui-chevron-right" })
-                    ]
-                  )
-                : _vm._e(),
-              _vm._v(" "),
-              _vm.questionIndex + 1 == _vm.soals.length
-                ? _c(
-                    "b-button",
-                    {
-                      staticClass: "float-right",
-                      attrs: { variant: "success", size: "md", squared: "" },
-                      on: {
-                        click: function($event) {
-                          return _vm.next()
-                        }
-                      }
-                    },
-                    [
-                      _vm._v("Selesai   "),
-                      _c("i", { staticClass: "cui-check" })
-                    ]
-                  )
-                : _vm._e()
-            ],
-            1
-          )
-        : _vm._e()
-    ]),
-    _vm._v(" "),
-    _c(
-      "div",
-      {
-        directives: [
-          {
-            name: "show",
-            rawName: "v-show",
-            value: _vm.sidebar,
-            expression: "sidebar"
-          }
-        ],
-        staticClass: "side"
-      },
-      [
+  return _c(
+    "div",
+    [
+      _c("div", { staticClass: "card mt-5" }, [
         _c(
           "div",
-          { staticClass: "inner-side" },
-          _vm._l(_vm.filleds, function(fiel, index) {
-            return _c(
-              "button",
+          { staticClass: "card-header" },
+          [
+            _vm._v("\n\t\t\t\tSOAL NO. \n\t\t    \t"),
+            _c(
+              "b-button",
               {
-                staticClass:
-                  "btn btn-outline-secondary my-1 rounded-0 w-2 mx-1",
-                class: {
-                  "btn-primary": index == _vm.questionIndex,
-                  "btn-outline-warning": _vm.ragu
-                },
-                attrs: { type: "button" },
-                on: {
-                  click: function($event) {
-                    return _vm.toLand(index)
-                  }
+                attrs: {
+                  variant: "primary",
+                  size: "sm",
+                  squared: "",
+                  disabled: ""
                 }
               },
-              [
-                _vm._v("\n\t\t\t\t  " + _vm._s(index + 1) + " "),
-                _c(
-                  "small",
-                  {
-                    directives: [
-                      {
-                        name: "show",
-                        rawName: "v-show",
-                        value: fiel.jawab != 0,
-                        expression: "fiel.jawab != 0"
-                      }
-                    ],
-                    staticClass: "cui-check"
-                  },
-                  [_vm._v(" ")]
-                ),
-                _c(
-                  "small",
-                  {
-                    directives: [
-                      {
-                        name: "show",
-                        rawName: "v-show",
-                        value: fiel.jawab == 0,
-                        expression: "fiel.jawab == 0"
-                      }
-                    ],
-                    staticClass: "cui-warning"
-                  },
-                  [_vm._v(" ")]
-                )
-              ]
+              [_vm._v(_vm._s(_vm.questionIndex + 1))]
+            ),
+            _vm._v(" "),
+            _c(
+              "b-button",
+              {
+                staticClass: "float-right",
+                attrs: {
+                  variant: "outline-dark",
+                  size: "sm",
+                  squared: "",
+                  disabled: ""
+                }
+              },
+              [_vm._v("Sisa waktu:  " + _vm._s(_vm.prettyTime))]
             )
-          }),
-          0
-        )
-      ]
-    ),
-    _vm._v(" "),
-    _c(
-      "button",
-      { staticClass: "coss btn btn-info rounded-0", on: { click: _vm.toggle } },
-      [
-        _c("i", {
-          directives: [
-            {
-              name: "show",
-              rawName: "v-show",
-              value: !_vm.sidebar,
-              expression: "!sidebar"
-            }
           ],
-          staticClass: "cui-chevron-left"
-        }),
+          1
+        ),
         _vm._v(" "),
-        _c("i", {
+        _vm.filleds
+          ? _c(
+              "div",
+              { staticClass: "card-body fade-in" },
+              [
+                _c("p", {
+                  domProps: {
+                    innerHTML: _vm._s(
+                      _vm.filleds[_vm.questionIndex].soal.pertanyaan
+                    )
+                  }
+                }),
+                _vm._v(" "),
+                _c(
+                  "b-form-group",
+                  _vm._l(_vm.filleds[_vm.questionIndex].soal.jawabans, function(
+                    jawab,
+                    index
+                  ) {
+                    return _c(
+                      "b-form-radio",
+                      {
+                        key: index,
+                        attrs: { name: "jwb", value: jawab.id },
+                        on: {
+                          change: function($event) {
+                            return _vm.selectOption(index)
+                          }
+                        },
+                        model: {
+                          value: _vm.selected,
+                          callback: function($$v) {
+                            _vm.selected = $$v
+                          },
+                          expression: "selected"
+                        }
+                      },
+                      [
+                        _c("span", { staticClass: "text-uppercase" }, [
+                          _vm._v(_vm._s(_vm._f("charIndex")(index)))
+                        ]),
+                        _vm._v(". "),
+                        _c("span", {
+                          domProps: { innerHTML: _vm._s(jawab.text_jawaban) }
+                        })
+                      ]
+                    )
+                  }),
+                  1
+                )
+              ],
+              1
+            )
+          : _vm._e(),
+        _vm._v(" "),
+        _vm.filleds
+          ? _c(
+              "div",
+              { staticClass: "card-footer" },
+              [
+                _vm.questionIndex != 0
+                  ? _c(
+                      "b-button",
+                      {
+                        attrs: {
+                          variant: "secondary",
+                          size: "md",
+                          squared: ""
+                        },
+                        on: {
+                          click: function($event) {
+                            return _vm.prev()
+                          }
+                        }
+                      },
+                      [
+                        _c("i", { staticClass: "cui-chevron-left" }),
+                        _vm._v("   Sebelumnya")
+                      ]
+                    )
+                  : _vm._e(),
+                _vm._v(" "),
+                _c(
+                  "b-button",
+                  {
+                    staticStyle: { position: "absolute", left: "41%" },
+                    attrs: { variant: "warning", squared: "" }
+                  },
+                  [
+                    _c(
+                      "b-form-checkbox",
+                      {
+                        attrs: { size: "lg", value: "1" },
+                        model: {
+                          value: _vm.ragu,
+                          callback: function($$v) {
+                            _vm.ragu = $$v
+                          },
+                          expression: "ragu"
+                        }
+                      },
+                      [_vm._v("Ragu ragu")]
+                    )
+                  ],
+                  1
+                ),
+                _vm._v(" "),
+                _vm.questionIndex + 1 != _vm.filleds.length
+                  ? _c(
+                      "b-button",
+                      {
+                        staticClass: "float-right",
+                        attrs: { variant: "success", size: "md", squared: "" },
+                        on: {
+                          click: function($event) {
+                            return _vm.next()
+                          }
+                        }
+                      },
+                      [
+                        _vm._v("Selanjutnya   "),
+                        _c("i", { staticClass: "cui-chevron-right" })
+                      ]
+                    )
+                  : _vm._e(),
+                _vm._v(" "),
+                _vm.questionIndex + 1 == _vm.filleds.length
+                  ? _c(
+                      "b-button",
+                      {
+                        directives: [
+                          {
+                            name: "b-modal",
+                            rawName: "v-b-modal.modal-no-backdrop",
+                            modifiers: { "modal-no-backdrop": true }
+                          }
+                        ],
+                        staticClass: "float-right",
+                        attrs: { variant: "success", size: "md", squared: "" }
+                      },
+                      [
+                        _vm._v("Selesai   "),
+                        _c("i", { staticClass: "cui-check" })
+                      ]
+                    )
+                  : _vm._e()
+              ],
+              1
+            )
+          : _vm._e()
+      ]),
+      _vm._v(" "),
+      _c(
+        "b-modal",
+        {
+          attrs: {
+            id: "modal-no-backdrop",
+            "hide-backdrop": "",
+            squared: "",
+            "content-class": "shadow",
+            title: "BootstrapVue"
+          }
+        },
+        [
+          _c("p", { staticClass: "my-2" }, [
+            _c("i", { staticClass: "cui-warning" })
+          ])
+        ]
+      ),
+      _vm._v(" "),
+      _c(
+        "div",
+        {
           directives: [
             {
               name: "show",
@@ -44384,11 +44394,73 @@ var render = function() {
               expression: "sidebar"
             }
           ],
-          staticClass: "cui-chevron-right"
-        })
-      ]
-    )
-  ])
+          staticClass: "side"
+        },
+        [
+          _c(
+            "div",
+            { staticClass: "inner-side" },
+            _vm._l(_vm.filleds, function(fiel, index) {
+              return _c(
+                "button",
+                {
+                  staticClass: "btn my-1 rounded-0 w-2 mx-1",
+                  class: {
+                    "btn-primary": fiel.jawab != 0,
+                    "btn-outline-primary": fiel.jawab == 0,
+                    "btn-warning": fiel.ragu_ragu == 1,
+                    "btn-dark text-light": index == _vm.questionIndex
+                  },
+                  attrs: { type: "button" },
+                  on: {
+                    click: function($event) {
+                      return _vm.toLand(index)
+                    }
+                  }
+                },
+                [_vm._v("\n\t\t\t\t  " + _vm._s(index + 1) + " \n\t\t\t\t")]
+              )
+            }),
+            0
+          )
+        ]
+      ),
+      _vm._v(" "),
+      _c(
+        "button",
+        {
+          staticClass: "coss btn btn-info rounded-0",
+          on: { click: _vm.toggle }
+        },
+        [
+          _c("i", {
+            directives: [
+              {
+                name: "show",
+                rawName: "v-show",
+                value: !_vm.sidebar,
+                expression: "!sidebar"
+              }
+            ],
+            staticClass: "cui-chevron-left"
+          }),
+          _vm._v(" "),
+          _c("i", {
+            directives: [
+              {
+                name: "show",
+                rawName: "v-show",
+                value: _vm.sidebar,
+                expression: "sidebar"
+              }
+            ],
+            staticClass: "cui-chevron-right"
+          })
+        ]
+      )
+    ],
+    1
+  )
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -44416,7 +44488,7 @@ var render = function() {
     _vm._m(0),
     _vm._v(" "),
     _vm.errors.invalid
-      ? _c("div", { staticClass: "alert alert-danger" }, [
+      ? _c("div", { staticClass: "alert alert-danger fade-in" }, [
           _vm._v(_vm._s(_vm.errors.invalid))
         ])
       : _vm._e(),
@@ -44428,10 +44500,8 @@ var render = function() {
         staticStyle: { "margin-bottom": "100px" }
       },
       [
-        _c("div", { staticClass: "row" }, [
-          _c("div", { staticClass: "col-3" }),
-          _vm._v(" "),
-          _c("div", { staticClass: "col-sm" }, [
+        _c("div", { staticClass: "row justify-content-md-center" }, [
+          _c("div", { staticClass: "col-sm-6" }, [
             _c("div", { staticClass: "card" }, [
               _vm._m(1),
               _vm._v(" "),
@@ -44468,6 +44538,7 @@ var render = function() {
                         },
                         domProps: { value: _vm.data.no_ujian },
                         on: {
+                          keyup: _vm.clearError,
                           input: function($event) {
                             if ($event.target.composing) {
                               return
@@ -44518,6 +44589,7 @@ var render = function() {
                         },
                         domProps: { value: _vm.data.password },
                         on: {
+                          keyup: _vm.clearError,
                           input: function($event) {
                             if ($event.target.composing) {
                               return
@@ -44590,9 +44662,7 @@ var render = function() {
               _vm._v(" "),
               _vm._m(4)
             ])
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "col-3" })
+          ])
         ])
       ]
     ),
@@ -44769,17 +44839,6 @@ var render = function() {
             _vm._v(" "),
             _vm.jadwal && _vm.ujian
               ? _c("div", { staticClass: "card-body rounded-0 fade-in" }, [
-                  !_vm.jadwal.mulai
-                    ? _c(
-                        "div",
-                        { staticClass: "alert alert-danger rounded-0" },
-                        [
-                          _c("i", { staticClass: "cui-info" }),
-                          _vm._v("   Tidak ada jadwal ujian pada hari ini")
-                        ]
-                      )
-                    : _vm._e(),
-                  _vm._v(" "),
                   _c("table", { staticClass: "table table-borderless" }, [
                     _c("tr", [
                       _c("td", { attrs: { width: "200px" } }, [
@@ -44875,8 +44934,26 @@ var render = function() {
                 ])
               : _vm._e(),
             _vm._v(" "),
-            _c("div", { staticClass: "card-footer" })
-          ])
+            !_vm.ujian
+              ? _c("div", { staticClass: "card-body rounded-0 fade-in" }, [
+                  _vm._m(1),
+                  _vm._v(" "),
+                  _c("table", { staticClass: "table table-borderless" }, [
+                    _c("tr", [
+                      _c("td", { attrs: { width: "200px" } }, [
+                        _vm._v("No ujian")
+                      ]),
+                      _vm._v(" "),
+                      _c("td", {
+                        domProps: { textContent: _vm._s(_vm.peserta.no_ujian) }
+                      })
+                    ])
+                  ])
+                ])
+              : _vm._e()
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "card-footer" })
         ])
       ])
     ])
@@ -44889,6 +44966,15 @@ var staticRenderFns = [
     var _c = _vm._self._c || _h
     return _c("div", { staticClass: "card-header rounded-0" }, [
       _c("h4", [_vm._v("Konfirmasi data peserta ")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "alert alert-info rounded-0" }, [
+      _c("i", { staticClass: "cui-info" }),
+      _vm._v("   Tidak ada jadwal ujian pada hari ini")
     ])
   }
 ]
@@ -44915,7 +45001,45 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "container" }, [
     _c("div", { staticClass: "row" }, [
-      _vm._m(0),
+      _c("div", { staticClass: "col-md-8" }, [
+        _c("div", { staticClass: "card mt-5 rounded-0" }, [
+          _c("div", { staticClass: "kiri" }, [
+            _vm._m(0),
+            _vm._v(" "),
+            _vm.jadwal
+              ? _c("div", { staticClass: "card-body rounded-0" }, [
+                  _c("table", { staticClass: "table table-borderless" }, [
+                    _c("tr", [
+                      _c("td", { attrs: { width: "150px" } }, [
+                        _vm._v("Waktu ujian")
+                      ]),
+                      _vm._v(" "),
+                      _c("td", { domProps: { textContent: _vm._s(_vm.mulai) } })
+                    ]),
+                    _vm._v(" "),
+                    _c("tr", [
+                      _c("td", [_vm._v("Durasi")]),
+                      _vm._v(" "),
+                      _c("td", {
+                        domProps: { textContent: _vm._s(_vm.durasi) }
+                      })
+                    ]),
+                    _vm._v(" "),
+                    _c("tr", [
+                      _c("td", [_vm._v("Ujian ditutup")]),
+                      _vm._v(" "),
+                      _c("td", {
+                        domProps: { textContent: _vm._s(_vm.jadwal.berakhir) }
+                      })
+                    ])
+                  ])
+                ])
+              : _vm._e(),
+            _vm._v(" "),
+            _c("div", { staticClass: "card-footer" })
+          ])
+        ])
+      ]),
       _vm._v(" "),
       _c("div", { staticClass: "col-md-4" }, [
         _c("div", { staticClass: "card mt-5 rounded-0" }, [
@@ -44942,29 +45066,8 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "col-md-8" }, [
-      _c("div", { staticClass: "card mt-5 rounded-0" }, [
-        _c("div", { staticClass: "kiri" }, [
-          _c("div", { staticClass: "card-header rounded-0" }, [
-            _c("h4", [_vm._v("Penting untuk diingat ")])
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "card-body rounded-0" }, [
-            _c("h6", { staticClass: "text-danger" }, [
-              _c("i", { staticClass: "cui-info" }),
-              _vm._v("   No system is safe")
-            ]),
-            _vm._v(" "),
-            _c("p", { staticClass: "text-muted" }, [
-              _vm._v(
-                "\n\t          \tKita hidup di dunia yang pentuh dengan masalah, jangan sampai menyontek termasuk masalah anda\n\t          "
-              )
-            ])
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "card-footer" })
-        ])
-      ])
+    return _c("div", { staticClass: "card-header rounded-0" }, [
+      _c("h4", [_vm._v("Data ujian ")])
     ])
   },
   function() {
@@ -44974,7 +45077,7 @@ var staticRenderFns = [
     return _c("div", { staticClass: "alert alert-warning rounded-0" }, [
       _c("i", { staticClass: "cui-bullhorn" }),
       _vm._v(
-        "  \n\t\t\t    \tTombol mulai disable sampai waktu ujian tiba.\n\t\t\t    "
+        '  \n\t\t\t    \tTombol "mulai" disable sampai waktu ujian tiba.\n\t\t\t    '
       )
     ])
   }
@@ -65811,15 +65914,14 @@ __webpack_require__.r(__webpack_exports__);
 /*!***********************************************!*\
   !*** ./resources/js/pages/ujian/Kerjakan.vue ***!
   \***********************************************/
-/*! no static exports found */
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Kerjakan_vue_vue_type_template_id_81431a40___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Kerjakan.vue?vue&type=template&id=81431a40& */ "./resources/js/pages/ujian/Kerjakan.vue?vue&type=template&id=81431a40&");
 /* harmony import */ var _Kerjakan_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Kerjakan.vue?vue&type=script&lang=js& */ "./resources/js/pages/ujian/Kerjakan.vue?vue&type=script&lang=js&");
-/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _Kerjakan_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _Kerjakan_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__[key]; }) }(__WEBPACK_IMPORT_KEY__));
-/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
 
 
@@ -65849,7 +65951,7 @@ component.options.__file = "resources/js/pages/ujian/Kerjakan.vue"
 /*!************************************************************************!*\
   !*** ./resources/js/pages/ujian/Kerjakan.vue?vue&type=script&lang=js& ***!
   \************************************************************************/
-/*! no static exports found */
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -65950,15 +66052,14 @@ __webpack_require__.r(__webpack_exports__);
 /*!***************************************************!*\
   !*** ./resources/js/pages/ujian/UjianKonfirm.vue ***!
   \***************************************************/
-/*! no static exports found */
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _UjianKonfirm_vue_vue_type_template_id_cda93f44___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./UjianKonfirm.vue?vue&type=template&id=cda93f44& */ "./resources/js/pages/ujian/UjianKonfirm.vue?vue&type=template&id=cda93f44&");
 /* harmony import */ var _UjianKonfirm_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./UjianKonfirm.vue?vue&type=script&lang=js& */ "./resources/js/pages/ujian/UjianKonfirm.vue?vue&type=script&lang=js&");
-/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _UjianKonfirm_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _UjianKonfirm_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__[key]; }) }(__WEBPACK_IMPORT_KEY__));
-/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
 
 
@@ -65988,7 +66089,7 @@ component.options.__file = "resources/js/pages/ujian/UjianKonfirm.vue"
 /*!****************************************************************************!*\
   !*** ./resources/js/pages/ujian/UjianKonfirm.vue?vue&type=script&lang=js& ***!
   \****************************************************************************/
-/*! no static exports found */
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -66020,15 +66121,14 @@ __webpack_require__.r(__webpack_exports__);
 /*!***************************************************!*\
   !*** ./resources/js/pages/ujian/UjianPrepare.vue ***!
   \***************************************************/
-/*! no static exports found */
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _UjianPrepare_vue_vue_type_template_id_e17f15c6___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./UjianPrepare.vue?vue&type=template&id=e17f15c6& */ "./resources/js/pages/ujian/UjianPrepare.vue?vue&type=template&id=e17f15c6&");
 /* harmony import */ var _UjianPrepare_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./UjianPrepare.vue?vue&type=script&lang=js& */ "./resources/js/pages/ujian/UjianPrepare.vue?vue&type=script&lang=js&");
-/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _UjianPrepare_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _UjianPrepare_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__[key]; }) }(__WEBPACK_IMPORT_KEY__));
-/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
 
 
@@ -66058,7 +66158,7 @@ component.options.__file = "resources/js/pages/ujian/UjianPrepare.vue"
 /*!****************************************************************************!*\
   !*** ./resources/js/pages/ujian/UjianPrepare.vue?vue&type=script&lang=js& ***!
   \****************************************************************************/
-/*! no static exports found */
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -66175,7 +66275,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _pages_ujian_UjianKonfirm_vue__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./pages/ujian/UjianKonfirm.vue */ "./resources/js/pages/ujian/UjianKonfirm.vue");
 /* harmony import */ var _pages_ujian_UjianPrepare_vue__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./pages/ujian/UjianPrepare.vue */ "./resources/js/pages/ujian/UjianPrepare.vue");
 /* harmony import */ var _pages_ujian_Kerjakan_vue__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./pages/ujian/Kerjakan.vue */ "./resources/js/pages/ujian/Kerjakan.vue");
-/* harmony import */ var _pages_ujian_UjianSelesai__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./pages/ujian/UjianSelesai */ "./resources/js/pages/ujian/UjianSelesai.vue");
+/* harmony import */ var _pages_ujian_UjianSelesai__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./pages/ujian/UjianSelesai */ "./resources/js/pages/ujian/UjianSelesai.vue");
 
 
 
@@ -66186,8 +66286,6 @@ __webpack_require__.r(__webpack_exports__);
 // import IndexBanksoal from './pages/banksoal/Index.vue'
 // import DataBanksoal from './pages/banksoal/Banksoal.vue'
 // import SoalBanksoal from './pages/banksoal/SoalBanksoal.vue'
-
-/** Ujian point **/
 
 
 
@@ -66217,13 +66315,13 @@ var router = new vue_router__WEBPACK_IMPORTED_MODULE_1__["default"]({
       name: 'ujian.prepare',
       component: _pages_ujian_UjianPrepare_vue__WEBPACK_IMPORTED_MODULE_8__["default"]
     }, {
-      path: 'while/:banksoal',
+      path: 'while/:banksoal/:jadwal_id',
       name: 'ujian.while',
       component: _pages_ujian_Kerjakan_vue__WEBPACK_IMPORTED_MODULE_9__["default"]
     }, {
       path: 'selesai',
       name: 'ujian.selesai',
-      component: _pages_ujian_UjianSelesai__WEBPACK_IMPORTED_MODULE_11__["default"]
+      component: _pages_ujian_UjianSelesai__WEBPACK_IMPORTED_MODULE_10__["default"]
     }]
   } // section nanti fokus ke peserta dulu
   // {
@@ -66399,9 +66497,6 @@ var actions = {
   submit: function submit(_ref, payload) {
     var commit = _ref.commit;
     localStorage.setItem('token', null);
-    localStorage.setItem('nama', null);
-    localStorage.setItem('no_ujian', null);
-    localStorage.setItem('id', null);
     commit('SET_TOKEN', null, {
       root: true
     });
@@ -66413,6 +66508,9 @@ var actions = {
           localStorage.setItem('no_ujian', response.data.data.no_ujian);
           localStorage.setItem('id', response.data.data.id);
           commit('SET_TOKEN', response.data.data, {
+            root: true
+          });
+          commit('SET_LOADING', false, {
             root: true
           });
         } else {
@@ -66757,6 +66855,9 @@ var mutations = {
   SLICE_DATA_RESP: function SLICE_DATA_RESP(state, payload) {
     state.filledUjian.data[payload.index].jawab = payload.data.jawab;
   },
+  SLICE_RAGU_JAWABAN: function SLICE_RAGU_JAWABAN(state, payload) {
+    state.filledUjian.data[payload.index].ragu_ragu = payload.data.ragu_ragu;
+  },
   ASSIGN_DATA_UJIAN: function ASSIGN_DATA_UJIAN(state, payload) {
     state.dataUjian = payload;
   }
@@ -66778,8 +66879,18 @@ var actions = {
       });
     });
   },
-  getJawabanPeserta: function getJawabanPeserta(_ref2, payload) {
-    var commit = _ref2.commit;
+  updateRaguJawaban: function updateRaguJawaban(_ref2, payload) {
+    var commit = _ref2.commit,
+        state = _ref2.state;
+    return new Promise(function (resolve, reject) {
+      _api_js__WEBPACK_IMPORTED_MODULE_0__["default"].post("/ujian/ragu-ragu", payload).then(function (response) {
+        commit('SLICE_RAGU_JAWABAN', response.data);
+        resolve(response.data);
+      })["catch"](function (error) {});
+    });
+  },
+  getJawabanPeserta: function getJawabanPeserta(_ref3, payload) {
+    var commit = _ref3.commit;
     return new Promise(function (resolve, reject) {
       _api_js__WEBPACK_IMPORTED_MODULE_0__["default"].get("/ujian/jawaban/".concat(payload)).then(function (response) {
         commit('ASSIGN_DATA_JAWABAN', response.data);
@@ -66787,8 +66898,8 @@ var actions = {
       });
     });
   },
-  getUjianList: function getUjianList(_ref3, payload) {
-    var commit = _ref3.commit;
+  getUjianList: function getUjianList(_ref4, payload) {
+    var commit = _ref4.commit;
     return new Promise(function (resolve, reject) {
       _api_js__WEBPACK_IMPORTED_MODULE_0__["default"].post("/ujian/daftar").then(function (response) {
         commit('ASSIGN_DATA_LIST', response.data);
@@ -66796,24 +66907,24 @@ var actions = {
       });
     });
   },
-  takeFilled: function takeFilled(_ref4, payload) {
-    var commit = _ref4.commit;
+  takeFilled: function takeFilled(_ref5, payload) {
+    var commit = _ref5.commit;
     return new Promise(function (resolve, reject) {
       _api_js__WEBPACK_IMPORTED_MODULE_0__["default"].post("/ujian/filled", payload).then(function (response) {
         commit('FILLED_DATA_UJIAN', response.data);
       })["catch"](function (error) {});
     });
   },
-  updateWaktuSiswa: function updateWaktuSiswa(_ref5, payload) {
-    var commit = _ref5.commit;
+  updateWaktuSiswa: function updateWaktuSiswa(_ref6, payload) {
+    var commit = _ref6.commit;
     return new Promise(function (resolve, reject) {
       _api_js__WEBPACK_IMPORTED_MODULE_0__["default"].post("/ujian/sisa-waktu", payload).then(function (response) {
         resolve(response.data);
       })["catch"](function (error) {});
     });
   },
-  getPesertaDataUjian: function getPesertaDataUjian(_ref6, payload) {
-    var commit = _ref6.commit;
+  getPesertaDataUjian: function getPesertaDataUjian(_ref7, payload) {
+    var commit = _ref7.commit;
     return new Promise(function (resolve, reject) {
       _api_js__WEBPACK_IMPORTED_MODULE_0__["default"].post("/ujian/ujian-siswa-det", payload).then(function (response) {
         commit('ASSIGN_DATA_UJIAN', response.data);
@@ -66845,122 +66956,26 @@ __webpack_require__.r(__webpack_exports__);
 
 var state = function state() {
   return {
-    users: [],
-    roles: [],
-    permissions: [],
-    role_permission: [],
-    authenticated: [],
-    pesertaDetail: {
-      nama: localStorage.getItem('nama'),
-      no_ujian: localStorage.getItem('no_ujian'),
-      id: localStorage.getItem('id')
-    }
+    pesertaDetail: []
   };
 };
 
 var mutations = {
-  ASSIGN_USER: function ASSIGN_USER(state, payload) {
-    state.users = payload;
-  },
-  ASSIGN_ROLES: function ASSIGN_ROLES(state, payload) {
-    state.roles = payload;
-  },
-  ASSIGN_PERMISSION: function ASSIGN_PERMISSION(state, payload) {
-    state.permissions = payload;
-  },
-  ASSIGN_ROLE_PERMISSION: function ASSIGN_ROLE_PERMISSION(state, payload) {
-    state.role_permission = payload;
-  },
-  CLEAR_ROLE_PERMISSION: function CLEAR_ROLE_PERMISSION(state, payload) {
-    state.role_permission = [];
-  },
-  ASSIGN_USER_AUTH: function ASSIGN_USER_AUTH(state, payload) {
-    state.authenticated = payload;
+  ASSIGN_PESERTA_DETAIL: function ASSIGN_PESERTA_DETAIL(state, payload) {
+    state.pesertaDetail = payload;
   }
 };
 var actions = {
-  getUserLists: function getUserLists(_ref) {
-    var commit = _ref.commit;
+  setPesertaDetail: function setPesertaDetail(_ref) {
+    var commit = _ref.commit,
+        payload = _ref.payload;
     return new Promise(function (resolve, reject) {
-      _api_js__WEBPACK_IMPORTED_MODULE_0__["default"].get("/user-list").then(function (response) {
-        commit('ASSIGN_USER', response.data.data);
-        resolve(response.data);
-      });
-    });
-  },
-  setRoleUser: function setRoleUser(_ref2) {
-    var commit = _ref2.commit;
-    return new Promise(function (resolve, reject) {
-      commit('CLEAR_ERRORS', '', {
-        root: true
-      });
-      _api_js__WEBPACK_IMPORTED_MODULE_0__["default"].post("/set-role-user", payload).then(function (response) {
-        resolve(response.data);
-      })["catch"](function (error) {
-        if (error.response.status = 422) {
-          commit('SET_ERRORS', error.response.data.errors, {
-            root: true
-          });
-        }
-      });
-    });
-  },
-  getRoles: function getRoles(_ref3) {
-    var commit = _ref3.commit;
-    return new Promise(function (resolve) {
-      _api_js__WEBPACK_IMPORTED_MODULE_0__["default"].get("/roles").then(function (response) {
-        commit('ASSIGN_ROLES', response.data.data);
-        resolve(response.data);
-      });
-    });
-  },
-  getAllPermission: function getAllPermission(_ref4) {
-    var commit = _ref4.commit;
-    return new Promise(function (resolve, reject) {
-      _api_js__WEBPACK_IMPORTED_MODULE_0__["default"].get("/permissions").then(function (response) {
-        commit('ASSIGN_PERMISSION', response.data.data);
-        resolve(response.data);
-      });
-    });
-  },
-  getRolePermission: function getRolePermission(_ref5, payload) {
-    var commit = _ref5.commit;
-    return new Promise(function (resolve, reject) {
-      commit('CLEAR_ERRORS', '', {
-        root: true
-      });
-      _api_js__WEBPACK_IMPORTED_MODULE_0__["default"].post("/role-permission", {
-        role_id: payload
-      }).then(function (response) {
-        commit('ASSIGN_ROLE_PERMISSION', response.data.data);
-        resolve(response.data);
-      });
-    });
-  },
-  setRolePermission: function setRolePermission(_ref6, payload) {
-    var commit = _ref6.commit;
-    return new Promise(function (resolve, reject) {
-      commit('CLEAR_ERRORS', '', {
-        root: true
-      });
-      _api_js__WEBPACK_IMPORTED_MODULE_0__["default"].post("/set-role-permission", payload).then(function (response) {
-        resolve(response.data);
-      })["catch"](function (error) {
-        if (error.response.data == 422) {
-          commit('SET_ERRORS', error.response.data.error, {
-            root: true
-          });
-        }
-      });
-    });
-  },
-  getUserLogin: function getUserLogin(_ref7) {
-    var commit = _ref7.commit;
-    return new Promise(function (resolve, reject) {
-      _api_js__WEBPACK_IMPORTED_MODULE_0__["default"].get("user-authenticated").then(function (response) {
-        commit('ASSIGN_USER_AUTH', response.data.data);
-        resolve(response.data);
-      });
+      var data = {
+        id: localStorage.getItem('id'),
+        nama: localStorage.getItem('nama'),
+        no_ujian: localStorage.getItem('no_ujian')
+      };
+      commit('ASSIGN_PESERTA_DETAIL', data);
     });
   }
 };
@@ -66991,8 +67006,8 @@ var actions = {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! D:\data.center.laravel\vlam\resources\js\app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! D:\data.center.laravel\vlam\resources\sass\app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! D:\data_center\server4\vlam\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! D:\data_center\server4\vlam\resources\sass\app.scss */"./resources/sass/app.scss");
 
 
 /***/ })

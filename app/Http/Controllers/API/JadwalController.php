@@ -61,45 +61,20 @@ class JadwalController extends Controller
         return response()->json(['data' => $res]);
     }
 
+    /**
+     * Get data of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function getday()
     {
-        $data = Jadwal::with(['banksoal','banksoal.matpel'])->where(['tanggal' => now()->format('Y-m-d'),'status_ujian' => 1])->first();
-        $data['now'] = now()->getTimestamp();
+        $data = Jadwal::with([
+            'banksoal','banksoal.matpel'
+        ])->where([
+            'tanggal'       => now()->format('Y-m-d'),
+            'status_ujian'  => 1
+        ])->first();
 
         return response()->json(['data' => $data]);
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
     }
 }

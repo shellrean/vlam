@@ -16,7 +16,7 @@ class BanksoalSeeder extends Seeder
     	
   		Banksoal::create([
 	    	'kode_banksoal'		=> 'KBS-001',
-	    	'kelas_id'			=> 1,
+	    	'matpel_id'			=> 1,
 	    	'author'			=> 1,
 	    ]);
     }

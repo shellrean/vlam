@@ -13,7 +13,6 @@ import store from './store.js'
 // import DataBanksoal from './pages/banksoal/Banksoal.vue'
 // import SoalBanksoal from './pages/banksoal/SoalBanksoal.vue'
 
-/** Ujian point **/
 import LoginUjian from './pages/ujian/LoginUjian.vue'
 import IndexUjian from './pages/ujian/Index.vue'
 import UjianKonfirm from './pages/ujian/UjianKonfirm.vue'
@@ -48,7 +47,7 @@ const router = new Router({
 					component: UjianPrepare
 				},
 				{
-					path: 'while/:banksoal',
+					path: 'while/:banksoal/:jadwal_id',
 					name: 'ujian.while',
 					component: Kerjakan
 				},

@@ -21,5 +21,11 @@ class UsersTableSeeder extends Seeder
             'password' 	=> bcrypt('secret'),
             'role' 		=> 0
         ]);
+
+        Peserta::create([
+            'no_ujian'  => 'K01040026',
+            'nama'      => 'KUSWANDI',
+            'password'  => '7813',
+        ]);
     }
 }

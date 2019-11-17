@@ -38,12 +38,12 @@
   </div>
 </template>
 <script>
-  import { mapState } from 'vuex'
+  import { mapState, mapActions } from 'vuex'
 
 	export default {
 		name: 'IndexUjian',
     created() {
-      this.peserta
+      this.setPesertaDetail()
     },
     data() {
       return {
@@ -56,6 +56,7 @@
       })
     },
     methods: {
+      ...mapActions('user',['setPesertaDetail']),
       logout() { 
         return new Promise((resolve, reject) => {
             localStorage.removeItem('token')
@@ -68,7 +69,6 @@
             this.$router.push('/login')
         })
       }
-
     }
 	}
 </script>
