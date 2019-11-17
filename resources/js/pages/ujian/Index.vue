@@ -42,6 +42,9 @@
 
 	export default {
 		name: 'IndexUjian',
+    created() {
+      this.peserta
+    },
     data() {
       return {
 
@@ -56,6 +59,9 @@
       logout() { 
         return new Promise((resolve, reject) => {
             localStorage.removeItem('token')
+            localStorage.removeItem('no_ujian')
+            localStorage.removeItem('nama')
+            localStorage.removeItem('id')
             resolve()
         }).then(() => {
             this.$store.state.token = localStorage.getItem('token')

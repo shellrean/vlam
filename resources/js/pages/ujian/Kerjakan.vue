@@ -4,7 +4,7 @@
 			<div class="card-header">
 				SOAL NO. 
 		    	<b-button variant="primary" size="sm" squared disabled >{{ questionIndex+1 }}</b-button>
-		    	<b-button variant="outline-dark" class="float-right" size="sm" squared disabled>Siwa waktu: 17:00</b-button>
+		    	<b-button variant="outline-dark" class="float-right" size="sm" squared disabled>Siwa waktu:&nbsp; {{ prettyTime }}</b-button>
 			</div>
 			<div class="card-body" v-if="filleds">
 		    	<p v-html="filleds[questionIndex].soal.pertanyaan"></p>
@@ -28,7 +28,7 @@
 		<div class="side" v-show="sidebar">
 			<div class="inner-side">
 				<button type="button" class="btn btn-outline-secondary my-1 rounded-0 w-2 mx-1" v-for="(fiel,index) in filleds" :class="{ 'btn-primary': (index == questionIndex), 'btn-outline-warning' : ragu}" @click="toLand(index)">
-				  {{ index+1 }} <span class="cui-check" v-show="fiel.jawab != 0">&nbsp;</span><span class="cui-warning" v-show="fiel.jawab == 0">&nbsp;</span>
+				  {{ index+1 }} <small class="cui-check" v-show="fiel.jawab != 0">&nbsp;</small><small class="cui-warning" v-show="fiel.jawab == 0">&nbsp;</small>
 				</button>
 			</div>
 		</div>
@@ -44,6 +44,7 @@ export default {
 	name: 'DataUjian',
 	created() {
 		this.getAllSoal()
+		this.start()
 	},
 	data() {
 		return {
@@ -51,7 +52,8 @@ export default {
 			selected: '',
 			patt: 17,
 			sidebar: false,
-			ragu: 0
+			ragu: 0,
+			time: 0
 		}
 	},
 	filters: {
@@ -63,15 +65,23 @@ export default {
 		...mapState('banksoal', { soals: state => state.ujian.data }),
 		...mapState('ujian',{ 
 			jawabanPeserta: state => state.jawabanPeserta,
-			filleds: state => state.filledUjian.data
+			filleds: state => state.filledUjian.data,
+			detail: state => state.filledUjian.detail
 		}),
 		...mapState('user', {
         	peserta: state => state.pesertaDetail
-      	})
+      	}),
+      	prettyTime () {
+			let sec_num = parseInt(this.time, 10)
+    		let hours   = Math.floor(sec_num / 3600)
+    		let minutes = Math.floor((sec_num - (hours * 3600)) / 60)
+    		let seconds = sec_num - (hours * 3600) - (minutes * 60)
+    		return hours+':'+minutes+':'+seconds
+		}
 	},
 	methods: {
 		...mapActions('banksoal', ['getUjian']),
-		...mapActions('ujian', ['submitJawaban','takeFilled']),
+		...mapActions('ujian', ['submitJawaban','takeFilled','updateWaktuSiswa']),
 		getAllSoal() {
 			this.getUjian(this.$route.params.banksoal)
 			.then((resp) => {
@@ -88,6 +98,12 @@ export default {
 
 			})
 		},
+		updateSisaWaktu(time) {
+			this.updateWaktuSiswa({ sisa_waktu: time })
+			.then((resp) => {
+
+			})
+		},
 		selectOption(index) {
 			const fill = this.filleds[this.questionIndex]
 
@@ -100,6 +116,9 @@ export default {
 	        	index : this.questionIndex
 	        })
 		},
+		selesai() {
+			this.$router.push({ name: 'ujian.selesai' })
+		},
 		prev() {
 		    if (this.filleds.length > 0) this.questionIndex--
 		},
@@ -111,7 +130,16 @@ export default {
 	    },
 	    toLand(index) {
 	    	this.questionIndex = index
-	    }
+	    },
+	    start () {
+			this.timer = setInterval( () => {
+				if (this.time > 0) {
+					 this.time--
+				} else {
+
+				}
+			}, 1000 )
+		}
 	},
 	watch: {
 		soals(val) {
@@ -123,6 +151,16 @@ export default {
 		},
 		filleds() {
 			this.selected = this.filleds[this.questionIndex].jawab
+		},
+		detail(val) {
+			this.time = val.sisa_waktu
+			setInterval( () => {
+				if (this.time > 0) {
+					this.updateSisaWaktu(this.time)
+				} else {
+					this.selesai()
+				}
+			}, 5000 )
 		}
 	}
 }

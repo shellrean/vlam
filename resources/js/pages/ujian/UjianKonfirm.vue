@@ -1,13 +1,13 @@
 <template>
 	<div class="container">
 		<div class="row justify-content-md-center">
-		  <div class="col-md-6">
+		  <div class="col-md-8">
 		    <div class="card mt-5 rounded-0">
 		      <div class="kiri">
 		        <div class="card-header rounded-0">
 		          <h4>Konfirmasi data peserta </h4>
 		        </div>
-		        <div class="card-body rounded-0">
+		        <div class="card-body rounded-0 fade-in" v-if="jadwal && ujian">
 		          <div class="alert alert-danger rounded-0" v-if="!jadwal.mulai"><i class="cui-info"></i> &nbsp; Tidak ada jadwal ujian pada hari ini</div>
 		          <table class="table table-borderless">
 		          	<tr>
@@ -18,13 +18,9 @@
 		          		<td>Mata pelajaran</td>
 		          		<td v-text="jadwal.banksoal.matpel.nama"></td>
 		          	</tr>
-		          	<tr v-if="jadwal.mulai">
-		          		<td>Waktu test dibuka</td>
-		          		<td v-text="jadwal.mulai"></td>
-		          	</tr>
-		          	<tr v-if="jadwal.token">
+		          	<tr v-if="ujian.status_ujian == 0">
 		          		<td>Token</td>
-		          		<td>
+		          		<td v-if="jadwal.token">
 		          			<div class="input-group mb-3">
 							  <input type="text" class="form-control rounded-0" placeholder="Masukkan token" v-model="token_ujian" @keyup="resInv">
 							  <div class="input-group-append">
@@ -64,10 +60,14 @@
 	    	}),
 	    	...mapState('user', {
 		        peserta: state => state.pesertaDetail
-		     })
+		     }),
+	    	...mapState('ujian', {
+	    		ujian: state => state.dataUjian.data
+	    	})
 	    },
 	    methods: {
 	      ...mapActions('jadwal',['ujianHariIni']),
+	      ...mapActions('ujian',['getPesertaDataUjian']),
 	      cekToken(){
 	      	if (this.jadwal.token != this.token_ujian) {
 	      		this.invalidToken = true
@@ -76,9 +76,23 @@
 
 	      	this.$router.push({ name: 'ujian.prepare' })
 	      },
+	      dataUjianPeserta() {
+	      	this.getPesertaDataUjian({
+	      		jadwal_id :this.jadwal.id,
+	      		peserta_id : this.peserta.id,
+	   			lama	: this.jadwal.lama
+	      	})
+	      },
 	      resInv() {
 	      	this.invalidToken = false
 	      }
+	    },
+	    watch: {
+	    	jadwal(val) {
+	    		if(val.banksoal_id) {
+	    			this.dataUjianPeserta()
+	    		}
+	    	}
 	    }
 	}
 </script>

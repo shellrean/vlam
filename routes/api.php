@@ -24,6 +24,8 @@ Route::group(['middleare' => 'peserta'], function() {
 	Route::post('/ujian','API\UjianController@store');
 	Route::get('/ujian/jawaban/{id}', 'API\UjianController@getJawabanPeserta');
 	Route::post('/ujian/filled', 'API\UjianController@filled');
+	Route::post('/ujian/sisa-waktu', 'API\UjianController@sisaWaktu');
+	Route::post('/ujian/ujian-siswa-det', 'API\UjianController@detUjian');
 
 });
 

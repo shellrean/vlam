@@ -6,9 +6,9 @@
   	  				<img src="/img/brand/dki.png " width="65px">
   	  			</div>
 		  	  	<div class="right">
-		  	  		<table width="100%" border="0">   
+		  	  		<table width="100%" border="0" style="margin-top: 10px">   
 		     			<tr><td rowspan="3" width="90px" align="center"><img src="/img/avatars/avatar.png" class="foto" ></td>
-						<td>Selamat datang peserta ujian</td></tr>
+						<td style="color: #ecf0f1; font-size: 12px">Selamat datang peserta ujian</td></tr>
 						<tr><td><span class="user">Jangan lupa berdo'a </span></td></tr>
 					</table>
 		  	  	</div>
@@ -16,7 +16,7 @@
 		</header>
 
 		<div class="alert alert-danger" v-if="errors.invalid">{{ errors.invalid }}</div>
-		<div class="container mt-100 mb-5">
+		<div class="container mt-100" style="margin-bottom: 100px">
 			<div class="row">
 			    <div class="col-3"></div>
 			    <div class="col-sm">
@@ -57,7 +57,11 @@
 					  <div class="form-group row">
 					  	<label for="inputPassword" class="col-sm-3 col-form-label">&nbsp;</label>
 					  	<div class="col-sm-9">
-					      <button type="button" class="btn btn-success btn-block doblockui rounded-0" @click.prevent="postLogin">LOGIN</button>
+					      <!-- <button type="button" class="btn btn-success btn-block doblockui rounded-0" @click.prevent="postLogin">LOGIN</button> -->
+					        <b-button variant="success" squared block  :disabled="isLoading" @click.prevent="postLogin">
+							    <b-spinner small type="grow" v-show="isLoading"></b-spinner>
+							    Login
+							</b-button>
 					    </div>
 					  </div>
 			      	</div>
@@ -69,17 +73,17 @@
 			    <div class="col-3"></div>
 			</div>
 		</div>
-		<div class="">
-		 	<div style="margin-top:0px; bottom:50px; background-color:#dcdcdc; padding:7px; font-size:12px">
-		    	<div class="content">
-			 	<strong> VLAMP-CBT v1.0</strong><br>
-			 	<strong> SystemAppData</strong>
-		    	</div>
-			</div>
-		 	<footer class="bg-dark text-center py-2">
-				&copy; 2019, Shellrean 
-			</footer>
-		</div>
+		<div class="fixed-bottom">
+	      <div style="margin-top:0px; bottom:50px; background-color:#dcdcdc; padding:7px; font-size:8px">
+	          <div class="content">
+	        <strong> VLAMP-CBT v1.0</strong><br>
+	        <strong> SystemAppData</strong>
+	          </div>
+	      </div>
+	      <footer class="bg-dark text-center py-2">
+	        Copyright © 2019 Shellrean. All Rights Reserved 
+	      </footer>
+	    </div>
 	</div>
 </template>
 <script>
@@ -99,13 +103,14 @@
 			}
 		},
 		computed: {
-			...mapGetters(['isAuth']),
+			...mapGetters(['isAuth','isLoading']),
 			...mapState(['errors'])
 		},
 		methods: {
 			...mapActions('auth',['submit']),
-			...mapMutations(['CLEAR_ERRORS']),
+			...mapMutations(['CLEAR_ERRORS','SET_LOADING']),
 			postLogin() {
+				this.SET_LOADING(true)
 				this.submit(this.data).then( () => {
 					if (this.isAuth) {
 						this.CLEAR_ERRORS()

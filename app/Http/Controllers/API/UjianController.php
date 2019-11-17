@@ -9,6 +9,7 @@ use Illuminate\Support\Collection;
 use App\Banksoal;
 use App\JawabanPeserta;
 use App\Jadwal;
+use App\SiswaUjian;
 
 class UjianController extends Controller
 {
@@ -68,7 +69,35 @@ class UjianController extends Controller
             $find = JawabanPeserta::with(['soal','soal.jawabans'])->where(['peserta_id' => $user_id, 'banksoal_id' => $id])->get();
             return response()->json(['data' => $all]);
         }
+        $detail = SiswaUjian::find(1);
+        return response()->json(['data' => $find, 'detail' => $detail]);
+    }
 
-        return response()->json(['data' => $find]);
+    public function sisaWaktu(Request $request)
+    {
+        $detail = SiswaUjian::find(1);
+        $detail->sisa_waktu = $request->sisa_waktu;
+        $detail->save();
+        return response()->json(['data' => 'updated']);
+    }
+
+    public function detUjian(Request $request) 
+    {
+        $ujian = SiswaUjian::where(['jadwal_id' => $request->jadwal_id, 'peserta_id' => $request->peserta_id])->first();
+
+        if(!$ujian) {
+            $data = [
+                'jadwal_id'     => $request->jadwal_id,
+                'peserta_id'    => $request->peserta_id,
+                'mulai_ujian'   => now()->format('H:i:s'),
+                'sisa_waktu'    => $request->lama,
+            ];
+
+            $data = SiswaUjian::create($data);
+
+            return response()->json(['data' => $data]);
+        }
+
+        return response()->json(['data' => $ujian]);
     }
 }

@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div class="container">
 		<div class="row">
 		  <div class="col-md-8">
 		    <div class="card mt-5 rounded-0">
@@ -23,10 +23,10 @@
 		  	<div class="card mt-5 rounded-0">
 		  		<div class="card-body">
 				  	<div class="alert alert-warning rounded-0">
-				    	<i class="cui-info"></i>  
-				    	Anda masih bisa kembali ke tempat ini selama belum memasuki ruang ujian.
+				    	<i class="cui-bullhorn"></i>  
+				    	Tombol mulai disable sampai waktu ujian tiba.
 				    </div>
-				    <button class="btn btn-block btn-danger rounded-0" @click="start">Mulai</button>
+				    <button class="btn btn-block btn-danger rounded-0" @click="start" :disabled="disable">Mulai</button>
 				</div>
 			</div>
 		  </div>
@@ -39,10 +39,13 @@ export default {
 	name: 'PrepareUjian',
 	created() {
 		this.ujianHariIni()
+		this.starTime()
 	},
 	data() {
 		return {
-			disable: false
+			disable: true,
+			time: '',
+			starter: '',
 		}
 	},
 	computed: {
@@ -56,9 +59,38 @@ export default {
 	    start() {
 	    	this.$router.push({ 
 	    		name: 'ujian.while', 
-	    		params: { banksoal: this.jadwal.banksoal_id } 
+	    		params: { banksoal: this.jadwal.banksoal_id, jadwal_id: this.jadwal.id } 
 	    	})
-	    }
+	    },
+	    starTime() {
+			setInterval( () => {
+				this.time = new Date()
+			}, 3000 )
+		}
+	},
+	watch: {
+		jadwal() {
+			const date = new Date()
+			const ye = date.getFullYear()
+			const mo = date.getMonth()
+			const da = date.getDate()
+
+			const mulai = this.jadwal.mulai
+        	const splicer = mulai.split(":");
+
+        	const h = parseInt(splicer[0])
+        	const i = parseInt(splicer[1])
+        	const s = parseInt(splicer[2])
+
+			const rest = new Date(ye,mo,da,h,i,s)
+
+			this.starter = rest
+		},
+		time() {
+			if(this.starter < this.time) {
+				this.disable = false
+			}
+		}
 	}
 }
 </script>

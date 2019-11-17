@@ -19,6 +19,7 @@ import IndexUjian from './pages/ujian/Index.vue'
 import UjianKonfirm from './pages/ujian/UjianKonfirm.vue'
 import UjianPrepare from './pages/ujian/UjianPrepare.vue'
 import Kerjakan from './pages/ujian/Kerjakan.vue'
+import UjianSelesai from './pages/ujian/UjianSelesai'
 
 
 Vue.use(Router)
@@ -50,6 +51,11 @@ const router = new Router({
 					path: 'while/:banksoal',
 					name: 'ujian.while',
 					component: Kerjakan
+				},
+				{
+					path: 'selesai',
+					name: 'ujian.selesai',
+					component: UjianSelesai
 				}
 			]
 		}

@@ -28,12 +28,14 @@ const actions = {
 				}
 				else {
 					commit('SET_ERRORS', { invalid: 'No ujian/Password salah' } , { root: true })
+					commit('SET_LOADING',false, { root: true })
 				}
 				resolve(response.data)
 			})
 			.catch((error) => {
 				if (error.response.status == 422) {
 					commit('SET_ERRORS',error.response.data.errors, { root: true})
+					commit('SET_LOADING',false, { root: true })
 				}
 			})
 		})

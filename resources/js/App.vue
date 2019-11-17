@@ -5,9 +5,9 @@
 
 		<div class="c-wrapper">
 			<app-header v-if="isAuth && isAdmin" />
-			
+			<transition name="slide-fade">
 			<router-view />
-
+			</transition>
 			<app-footer v-if="isAuth && isAdmin" />
 
 		</div >

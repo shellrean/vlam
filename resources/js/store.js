@@ -24,7 +24,8 @@ const store = new Vuex.Store({
 	state: {
 		token: localStorage.getItem('token'),
 		role: localStorage.getItem('role'),
-		errors: []
+		errors: [],
+		isLoading: false
 	},
 	getters: {
 		isAuth: state => {
@@ -32,6 +33,9 @@ const store = new Vuex.Store({
 		},
 		isAdmin: state => {
 			return state.role != "null" && state.role != null && state.role != 5
+		},
+		isLoading: state => {
+			return state.isLoading
 		}
 	},
 	mutations: {
@@ -46,6 +50,9 @@ const store = new Vuex.Store({
 		},
 		CLEAR_ERRORS(state) {
 			state.errors = []
+		},
+		SET_LOADING(state, payload) {
+			state.isLoading = payload
 		}
 	}
 })
