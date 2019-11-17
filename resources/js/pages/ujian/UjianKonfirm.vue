@@ -1,6 +1,6 @@
 <template>
-	<div>
-		<div class="row">
+	<div class="container">
+		<div class="row justify-content-md-center">
 		  <div class="col-md-6">
 		    <div class="card mt-5 rounded-0">
 		      <div class="kiri">
@@ -8,24 +8,21 @@
 		          <h4>Konfirmasi data peserta </h4>
 		        </div>
 		        <div class="card-body rounded-0">
+		          <div class="alert alert-danger rounded-0" v-if="!jadwal.mulai"><i class="cui-info"></i> &nbsp; Tidak ada jadwal ujian pada hari ini</div>
 		          <table class="table table-borderless">
 		          	<tr>
 		          		<td width="200px">No ujian</td>
 		          		<td v-text="peserta.no_ujian"></td>
 		          	</tr>
-		          	<tr>
+		          	<tr v-if="jadwal.banksoal">
 		          		<td>Mata pelajaran</td>
-		          		<td v-if="jadwal.banksoal" v-text="jadwal.banksoal.matpel.nama"></td>
+		          		<td v-text="jadwal.banksoal.matpel.nama"></td>
 		          	</tr>
-		          	<tr>
-		          		<td>Status ujian</td>
-		          		<td v-text="jadwal.status_ujian"></td>
-		          	</tr>
-		          	<tr>
+		          	<tr v-if="jadwal.mulai">
 		          		<td>Waktu test dibuka</td>
 		          		<td v-text="jadwal.mulai"></td>
 		          	</tr>
-		          	<tr>
+		          	<tr v-if="jadwal.token">
 		          		<td>Token</td>
 		          		<td>
 		          			<div class="input-group mb-3">
@@ -57,10 +54,6 @@
 		},
 	    data() {
 	      return {
-	        peserta: {
-	          nama: '',
-	          no_ujian: ''
-	        },
 	        token_ujian : '',
 	        invalidToken: false
 	      } 
@@ -68,14 +61,13 @@
 	    computed: {
 	    	...mapState('jadwal', {
 	    		jadwal: state => state.banksoalHariIni
-	    	})
+	    	}),
+	    	...mapState('user', {
+		        peserta: state => state.pesertaDetail
+		     })
 	    },
 	    methods: {
 	      ...mapActions('jadwal',['ujianHariIni']),
-	      getDataPeserta() {
-	        this.peserta.nama = localStorage.getItem('nama'),
-	        this.peserta.no_ujian = localStorage.getItem('no_ujian')
-	      },
 	      cekToken(){
 	      	if (this.jadwal.token != this.token_ujian) {
 	      		this.invalidToken = true
@@ -87,9 +79,6 @@
 	      resInv() {
 	      	this.invalidToken = false
 	      }
-	    },
-	    mounted() {
-	      this.getDataPeserta()
 	    }
 	}
 </script>

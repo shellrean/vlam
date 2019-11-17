@@ -26,7 +26,7 @@
 				    	<i class="cui-info"></i>  
 				    	Anda masih bisa kembali ke tempat ini selama belum memasuki ruang ujian.
 				    </div>
-				    <button class="btn btn-block btn-danger rounded-0">Mulai</button>
+				    <button class="btn btn-block btn-danger rounded-0" @click="start">Mulai</button>
 				</div>
 			</div>
 		  </div>
@@ -52,7 +52,13 @@ export default {
 		})
 	},
 	methods: {
-	    ...mapActions('jadwal',['ujianHariIni'])
+	    ...mapActions('jadwal',['ujianHariIni']),
+	    start() {
+	    	this.$router.push({ 
+	    		name: 'ujian.while', 
+	    		params: { banksoal: this.jadwal.banksoal_id } 
+	    	})
+	    }
 	}
 }
 </script>

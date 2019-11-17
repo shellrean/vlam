@@ -13,6 +13,7 @@ const actions = {
 		localStorage.setItem('token',null)
 		localStorage.setItem('nama',null)
 		localStorage.setItem('no_ujian',null)
+		localStorage.setItem('id',null)
 
 		commit('SET_TOKEN',null,{ root: true } )
 		return new Promise((resolve, reject) => {
@@ -22,6 +23,7 @@ const actions = {
 					localStorage.setItem('token',response.data.data.api_token)
 					localStorage.setItem('nama',response.data.data.nama)
 					localStorage.setItem('no_ujian',response.data.data.no_ujian)
+					localStorage.setItem('id',response.data.data.id)
 					commit('SET_TOKEN',response.data.data, { root: true })
 				}
 				else {

@@ -2,7 +2,8 @@ import $axios from '../api.js'
 
 const state = () => ({
 	jawabanPeserta: [],
-	ujianList: []
+	ujianList: [],
+	filledUjian: []
 })
 
 const mutations = {
@@ -11,6 +12,12 @@ const mutations = {
 	},
 	ASSIGN_DATA_LIST(state, payload) {
 		state.ujianList = payload
+	},
+	FILLED_DATA_UJIAN(state, payload) {
+		state.filledUjian = payload
+	},
+	SLICE_DATA_RESP(state, payload) {
+		state.filledUjian.data[payload.index].jawab = payload.data.jawab
 	}
 }
 
@@ -19,6 +26,7 @@ const actions = {
 		return new Promise(( resolve, reject ) => {
 			$axios.post(`/ujian`, payload) 
 			.then((response) => {
+				commit('SLICE_DATA_RESP', response.data)
 				resolve(response.data)
 			})
 			.catch((error) => {
@@ -43,6 +51,17 @@ const actions = {
 			.then((response) => {
 				commit('ASSIGN_DATA_LIST', response.data)
 				resolve(response.data)
+			})
+		})
+	},
+	takeFilled({ commit }, payload) {
+		return new Promise((resolve, reject) => {
+			$axios.post(`/ujian/filled`, payload)
+			.then((response) => {
+				commit('FILLED_DATA_UJIAN', response.data)
+			})
+			.catch((error) => {
+
 			})
 		})
 	}

@@ -9,7 +9,7 @@
           <table width="100%" border="0" style="margin-top: 10px">   
             <tr>
               <td rowspan="3" width="90px" align="center"><img src="/img/avatars/avatar.png" class="foto" ></td>
-              <td style="color: #ecf0f1" v-text="peserta.no_ujian"></td>
+              <td style="color: #ecf0f1; font-size: 12px" v-text="peserta.no_ujian"></td>
             </tr>
             <tr>
               <td><span class="user" v-text="peserta.nama"></span></td>
@@ -19,7 +19,7 @@
         </div>
       </div>
     </header>
-    <div class="container">
+    <div class="container-fluid" style="margin-bottom: 100px">
       <div>
         <router-view></router-view>
       </div>
@@ -32,26 +32,28 @@
           </div>
       </div>
       <footer class="bg-dark text-center py-2">
-        Copyright © 2019 Shellrean. All Rights Reserved {{ now }}
+        Copyright © 2019 Shellrean. All Rights Reserved 
       </footer>
     </div>
   </div>
 </template>
 <script>
+  import { mapState } from 'vuex'
 
 	export default {
 		name: 'IndexUjian',
     data() {
       return {
-        peserta: {
-          nama: '',
-          no_ujian: ''
-        },
-        now: new Date
+
       } 
     },
+    computed: {
+      ...mapState('user', {
+        peserta: state => state.pesertaDetail
+      })
+    },
     methods: {
-      logout() {
+      logout() { 
         return new Promise((resolve, reject) => {
             localStorage.removeItem('token')
             resolve()
@@ -59,18 +61,8 @@
             this.$store.state.token = localStorage.getItem('token')
             this.$router.push('/login')
         })
-      },
-      getDataPeserta() {
-        this.peserta.nama = localStorage.getItem('nama'),
-        this.peserta.no_ujian = localStorage.getItem('no_ujian')
       }
 
-    },
-    created() {
-      setInterval(() => this.now = new Date, 1000 * 1)
-    },
-    mounted() {
-      this.getDataPeserta()
     }
 	}
 </script>

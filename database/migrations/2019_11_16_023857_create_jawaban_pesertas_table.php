@@ -17,12 +17,14 @@ class CreateJawabanPesertasTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('banksoal_id');
             $table->unsignedBigInteger('soal_id');
-            $table->unsignedBigInteger('jawab');
+            $table->unsignedBigInteger('peserta_id');
+            $table->integer('jawab',2);
+            $table->integer('ragu_ragu',1)->default(0);
             $table->char('iscorrect');
 
             $table->foreign('banksoal_id')->references('id')->on('banksoals')->onDelete('cascade');
             $table->foreign('soal_id')->references('id')->on('soals')->onDelete('cascade');
-            $table->foreign('jawab')->references('id')->on('jawaban_soals')->onDelete('cascade');
+            $table->foreign('peserta_id')->references('id')->on('pesertas')->onDelete('cascade');
             $table->timestamps();
         });
     }

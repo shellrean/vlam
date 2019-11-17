@@ -47,7 +47,7 @@ const router = new Router({
 					component: UjianPrepare
 				},
 				{
-					path: 'while',
+					path: 'while/:banksoal',
 					name: 'ujian.while',
 					component: Kerjakan
 				}

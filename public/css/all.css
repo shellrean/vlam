@@ -1,1 +1,32 @@
-.left{float:left;width:70%}.right{float:right;width:30%;background-color:#222f3e;height:90px;color:#FFF;font-size:13px;font-style:normal;font-weight:400}.user{color:#FFF;font-size:13px;font-style:normal;font-weight:700;top:-20px}.log{color:#3799c2;font-size:11px;font-style:normal;font-weight:700;top:-20px}.group:after{content:"";display:table;clear:both}.visible{display:block!important}.hidden{display:none!important}.foto{height:65px}.buntut{width:100%;bottom:0;position:absolute;margin-top:50px}@media screen and (max-width: 780px){.left,.right{float:none;width:auto;margin-top:0;height:101px;color:#FFF;display:block}.foto{height:80px}.buntut{width:200%;bottom:0;position:absolute;margin-top:50px}}@media screen and (max-width: 400px){.left{width:auto;height:91px}.right{float:none;width:auto;margin-top:0;height:60px;color:#FFF}.foto{height:60px}.buntut{width:100%;bottom:0;position:absolute;padding-top:50px}}.headers{box-shadow: 2px 5px 2px #c7c6c6;}.mt-100{margin-top:7rem}.header{background-color:#fff;padding-top:7px;padding-bottom:11px;margin:10px 15px 2px}.flex-item{background-color:#336898;width:120px;height:40px;margin-right:0;margin-top:-10px;line-height:20px;color:#fff;font-size:15px;font-weight:700;text-align:center;padding:7px 12px 6px}.flex-abu{background-color:#999;width:120px;height:40px;margin-right:0;margin-top:-10px;line-height:20px;color:#fff;font-size:15px;text-align:center;float:right;padding:10px 12px}.flex-biru{background-color:#000;width:120px;height:40px;margin-right:0;margin-top:-10px;line-height:20px;color:#fff;font-size:15px;text-align:center;float:right;padding:10px 5px}.flex-putih{background-color:#fff;width:120px;height:40px;margin-right:0;margin-top:-10px;line-height:20px;color:#000;font-size:15px;font-weight:700;text-align:center;float:left;padding:10px 12px}li.header{list-style:none;font-size:18px}
+.left{float:left;width:70%}.right{float:right;width:30%;background-color:#222f3e;height:90px;color:#FFF;font-size:13px;font-style:normal;font-weight:400}.user{color:#FFF;font-size:11px;font-style:normal;font-weight:700;top:-20px}.log{color:#3799c2;font-size:11px;font-style:normal;font-weight:700;top:-20px}.group:after{content:"";display:table;clear:both}.visible{display:block!important}.hidden{display:none!important}.foto{height:65px}.buntut{width:100%;bottom:0;position:absolute;margin-top:50px}@media screen and (max-width: 780px){.left,.right{float:none;width:auto;margin-top:0;height:101px;color:#FFF;display:block}.foto{height:80px}.buntut{width:200%;bottom:0;position:absolute;margin-top:50px}}@media screen and (max-width: 400px){.left{width:auto;height:91px}.right{float:none;width:auto;margin-top:0;height:60px;color:#FFF}.foto{height:60px}.buntut{width:100%;bottom:0;position:absolute;padding-top:50px}}.headers{box-shadow: 2px 5px 2px #c7c6c6;}.mt-100{margin-top:7rem}.header{background-color:#fff;padding-top:7px;padding-bottom:11px;margin:10px 15px 2px}.flex-item{background-color:#336898;width:120px;height:40px;margin-right:0;margin-top:-10px;line-height:20px;color:#fff;font-size:15px;font-weight:700;text-align:center;padding:7px 12px 6px}.flex-abu{background-color:#999;width:120px;height:40px;margin-right:0;margin-top:-10px;line-height:20px;color:#fff;font-size:15px;text-align:center;float:right;padding:10px 12px}.flex-biru{background-color:#000;width:120px;height:40px;margin-right:0;margin-top:-10px;line-height:20px;color:#fff;font-size:15px;text-align:center;float:right;padding:10px 5px}.flex-putih{background-color:#fff;width:120px;height:40px;margin-right:0;margin-top:-10px;line-height:20px;color:#000;font-size:15px;font-weight:700;text-align:center;float:left;padding:10px 12px}li.header{list-style:none;font-size:18px}
+.side {
+  margin: auto;
+  position: absolute;
+  top: 0;  bottom: 0; right: 0;
+  height: 400px;
+  width: 300px;
+  background: #fff;
+  box-shadow: 10px 5px #bdc3c7 ;
+  border: 1px solid #bdc3c7;
+  box-sizing: border-box;
+  padding: 15px 25px 15px 15px;
+  transition: 0.5s;
+  overflow-y: scroll;
+}
+.rigter {
+  right: -300px;
+}
+.inner-side {
+	position: relative;
+	width: 100%;
+	height: 100%;
+}
+.coss {
+	position: absolute;
+	/*left: -45px;*/
+	top: 50%;
+	right: 0;
+}
+.w-2 {
+	width: 50px
+}

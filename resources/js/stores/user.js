@@ -5,7 +5,12 @@ const state = () => ({
 	roles: [],
 	permissions: [],
 	role_permission: [],
-	authenticated: []
+	authenticated: [],
+	pesertaDetail: {
+		nama: localStorage.getItem('nama'),
+		no_ujian: localStorage.getItem('no_ujian'),
+		id : localStorage.getItem('id')
+	}
 })
 
 const mutations = {

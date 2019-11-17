@@ -8590,6 +8590,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 //
 //
 //
@@ -8629,17 +8636,17 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'IndexUjian',
   data: function data() {
-    return {
-      peserta: {
-        nama: '',
-        no_ujian: ''
-      },
-      now: new Date()
-    };
+    return {};
   },
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])('user', {
+    peserta: function peserta(state) {
+      return state.pesertaDetail;
+    }
+  })),
   methods: {
     logout: function logout() {
       var _this = this;
@@ -8652,20 +8659,7 @@ __webpack_require__.r(__webpack_exports__);
 
         _this.$router.push('/login');
       });
-    },
-    getDataPeserta: function getDataPeserta() {
-      this.peserta.nama = localStorage.getItem('nama'), this.peserta.no_ujian = localStorage.getItem('no_ujian');
     }
-  },
-  created: function created() {
-    var _this2 = this;
-
-    setInterval(function () {
-      return _this2.now = new Date();
-    }, 1000 * 1);
-  },
-  mounted: function mounted() {
-    this.getDataPeserta();
   }
 });
 
@@ -8727,28 +8721,19 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  name: 'DataBanksoal',
+  name: 'DataUjian',
   created: function created() {
-    this.getUjian();
-    this.getJawabanPeserta();
+    this.getAllSoal();
   },
   data: function data() {
     return {
       questionIndex: 0,
-      selected: ''
+      selected: '',
+      patt: 17,
+      sidebar: false,
+      ragu: 0
     };
   },
   filters: {
@@ -8758,46 +8743,64 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   },
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])('banksoal', {
     soals: function soals(state) {
-      return state.ujian;
+      return state.ujian.data;
     }
   }), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])('ujian', {
     jawabanPeserta: function jawabanPeserta(state) {
       return state.jawabanPeserta;
+    },
+    filleds: function filleds(state) {
+      return state.filledUjian.data;
+    }
+  }), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])('user', {
+    peserta: function peserta(state) {
+      return state.pesertaDetail;
     }
   })),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('banksoal', ['getUjian']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('ujian', ['submitJawaban', 'getJawabanPeserta']), {
-    prev: function prev() {
-      if (this.soals.data.pertanyaans.length > 0) this.questionIndex--;
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('banksoal', ['getUjian']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('ujian', ['submitJawaban', 'takeFilled']), {
+    getAllSoal: function getAllSoal() {
+      this.getUjian(this.$route.params.banksoal).then(function (resp) {});
     },
-    next: function next() {
-      if (this.questionIndex < this.soals.data.pertanyaans.length) this.questionIndex++;
+    filledAllSoal: function filledAllSoal() {
+      var payld = {
+        peserta_id: this.peserta.id,
+        banksoal: this.soals.id
+      };
+      this.takeFilled(payld).then(function (resp) {});
     },
     selectOption: function selectOption(index) {
-      var pertanyaan = this.soals.data.pertanyaans[this.questionIndex];
-      var data = {
-        banksoal_id: this.soals.data.id,
-        soal_id: pertanyaan.id,
-        jawab: pertanyaan.jawabans[index].id,
-        correct: pertanyaan.jawabans[index].correct
-      };
+      var fill = this.filleds[this.questionIndex];
       this.submitJawaban({
-        data: data
+        banksoal_id: fill.banksoal_id,
+        soal_id: fill.soal_id,
+        jawab: this.filleds[this.questionIndex].soal.jawabans[index].id,
+        correct: this.filleds[this.questionIndex].soal.jawabans[index].correct,
+        peserta_id: this.peserta.id,
+        index: this.questionIndex
       });
     },
-    getData: function getData(index) {
-      var _this = this;
-
-      this.getJawabanPeserta(this.soals.data.pertanyaans[index].id).then(function (res) {
-        _this.selected = res.data.jawab;
-      });
+    prev: function prev() {
+      if (this.filleds.length > 0) this.questionIndex--;
+    },
+    next: function next() {
+      if (this.questionIndex < this.filleds.length) this.questionIndex++;
+    },
+    toggle: function toggle() {
+      this.sidebar = !this.sidebar;
+    },
+    toLand: function toLand(index) {
+      this.questionIndex = index;
     }
   }),
   watch: {
-    questionIndex: function questionIndex(val) {
-      this.getData(val);
-    },
     soals: function soals(val) {
-      this.getData(0);
+      this.filledAllSoal();
+    },
+    questionIndex: function questionIndex() {
+      this.selected = this.filleds[this.questionIndex].jawab;
+    },
+    filleds: function filleds() {
+      this.selected = this.filleds[this.questionIndex].jawab;
     }
   }
 });
@@ -9004,9 +9007,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'KonfirmUjian',
@@ -9015,10 +9015,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   },
   data: function data() {
     return {
-      peserta: {
-        nama: '',
-        no_ujian: ''
-      },
       token_ujian: '',
       invalidToken: false
     };
@@ -9027,11 +9023,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     jadwal: function jadwal(state) {
       return state.banksoalHariIni;
     }
+  }), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])('user', {
+    peserta: function peserta(state) {
+      return state.pesertaDetail;
+    }
   })),
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('jadwal', ['ujianHariIni']), {
-    getDataPeserta: function getDataPeserta() {
-      this.peserta.nama = localStorage.getItem('nama'), this.peserta.no_ujian = localStorage.getItem('no_ujian');
-    },
     cekToken: function cekToken() {
       if (this.jadwal.token != this.token_ujian) {
         this.invalidToken = true;
@@ -9045,10 +9042,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     resInv: function resInv() {
       this.invalidToken = false;
     }
-  }),
-  mounted: function mounted() {
-    this.getDataPeserta();
-  }
+  })
 });
 
 /***/ }),
@@ -9123,7 +9117,16 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return state.banksoalHariIni.mulai;
     }
   })),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('jadwal', ['ujianHariIni']))
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('jadwal', ['ujianHariIni']), {
+    start: function start() {
+      this.$router.push({
+        name: 'ujian.while',
+        params: {
+          banksoal: this.jadwal.banksoal_id
+        }
+      });
+    }
+  })
 });
 
 /***/ }),
@@ -43813,7 +43816,7 @@ var render = function() {
                   _vm._m(1),
                   _vm._v(" "),
                   _c("td", {
-                    staticStyle: { color: "#ecf0f1" },
+                    staticStyle: { color: "#ecf0f1", "font-size": "12px" },
                     domProps: { textContent: _vm._s(_vm.peserta.no_ujian) }
                   })
                 ]),
@@ -43854,21 +43857,16 @@ var render = function() {
       ]
     ),
     _vm._v(" "),
-    _c("div", { staticClass: "container" }, [
-      _c("div", [_c("router-view")], 1)
-    ]),
+    _c(
+      "div",
+      {
+        staticClass: "container-fluid",
+        staticStyle: { "margin-bottom": "100px" }
+      },
+      [_c("div", [_c("router-view")], 1)]
+    ),
     _vm._v(" "),
-    _c("div", { staticClass: "fixed-bottom" }, [
-      _vm._m(2),
-      _vm._v(" "),
-      _c("footer", { staticClass: "bg-dark text-center py-2" }, [
-        _vm._v(
-          "\n        Copyright © 2019 Shellrean. All Rights Reserved " +
-            _vm._s(_vm.now) +
-            "\n      "
-        )
-      ])
-    ])
+    _vm._m(2)
   ])
 }
 var staticRenderFns = [
@@ -43899,26 +43897,34 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c(
-      "div",
-      {
-        staticStyle: {
-          "margin-top": "0px",
-          bottom: "50px",
-          "background-color": "#dcdcdc",
-          padding: "7px",
-          "font-size": "8px"
-        }
-      },
-      [
-        _c("div", { staticClass: "content" }, [
-          _c("strong", [_vm._v(" VLAMP-CBT v1.0")]),
-          _c("br"),
-          _vm._v(" "),
-          _c("strong", [_vm._v(" SystemAppData")])
-        ])
-      ]
-    )
+    return _c("div", { staticClass: "fixed-bottom" }, [
+      _c(
+        "div",
+        {
+          staticStyle: {
+            "margin-top": "0px",
+            bottom: "50px",
+            "background-color": "#dcdcdc",
+            padding: "7px",
+            "font-size": "8px"
+          }
+        },
+        [
+          _c("div", { staticClass: "content" }, [
+            _c("strong", [_vm._v(" VLAMP-CBT v1.0")]),
+            _c("br"),
+            _vm._v(" "),
+            _c("strong", [_vm._v(" SystemAppData")])
+          ])
+        ]
+      ),
+      _vm._v(" "),
+      _c("footer", { staticClass: "bg-dark text-center py-2" }, [
+        _vm._v(
+          "\n        Copyright © 2019 Shellrean. All Rights Reserved \n      "
+        )
+      ])
+    ])
   }
 ]
 render._withStripped = true
@@ -43943,234 +43949,291 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", [
-    _vm._m(0),
-    _vm._v(" "),
-    _c("div", { staticClass: "container-fluid mt-5" }, [
-      _c("div", { staticClass: "card" }, [
-        _c(
-          "div",
-          { staticClass: "card-header" },
-          [
-            _vm._v("\n\t\t    \t\tSOAL NO. "),
-            _c(
-              "b-button",
-              {
-                attrs: {
-                  variant: "primary",
-                  size: "sm",
-                  squared: "",
-                  disabled: ""
+    _c("div", { staticClass: "card mt-5" }, [
+      _c(
+        "div",
+        { staticClass: "card-header" },
+        [
+          _vm._v("\n\t\t\t\tSOAL NO. \n\t\t    \t"),
+          _c(
+            "b-button",
+            {
+              attrs: {
+                variant: "primary",
+                size: "sm",
+                squared: "",
+                disabled: ""
+              }
+            },
+            [_vm._v(_vm._s(_vm.questionIndex + 1))]
+          ),
+          _vm._v(" "),
+          _c(
+            "b-button",
+            {
+              staticClass: "float-right",
+              attrs: {
+                variant: "outline-dark",
+                size: "sm",
+                squared: "",
+                disabled: ""
+              }
+            },
+            [_vm._v("Siwa waktu: 17:00")]
+          )
+        ],
+        1
+      ),
+      _vm._v(" "),
+      _vm.filleds
+        ? _c(
+            "div",
+            { staticClass: "card-body" },
+            [
+              _c("p", {
+                domProps: {
+                  innerHTML: _vm._s(
+                    _vm.filleds[_vm.questionIndex].soal.pertanyaan
+                  )
                 }
-              },
-              [_vm._v(_vm._s(_vm.questionIndex + 1))]
-            ),
-            _vm._v(" "),
-            _c(
-              "b-button",
-              {
-                staticClass: "float-right",
-                attrs: {
-                  variant: "outline-dark",
-                  size: "sm",
-                  squared: "",
-                  disabled: ""
-                }
-              },
-              [_vm._v("Siwa waktu: 17:00")]
-            )
-          ],
-          1
-        ),
-        _vm._v(" "),
-        _c("div", { staticClass: "card-body" }, [
-          _vm.questionIndex < _vm.soals.data.pertanyaans.length
-            ? _c(
-                "div",
-                { key: _vm.questionIndex, staticClass: "questionContainer" },
-                [
-                  _c("p", [
-                    _vm._v(
-                      _vm._s(
-                        _vm.soals.data.pertanyaans[_vm.questionIndex].pertanyaan
-                      )
-                    )
-                  ]),
-                  _vm._v(" "),
-                  _c(
-                    "b-form-group",
-                    _vm._l(
-                      _vm.soals.data.pertanyaans[_vm.questionIndex].jawabans,
-                      function(jawab, index) {
-                        return _c(
-                          "b-form-radio",
-                          {
-                            key: index,
-                            attrs: { value: jawab.id, name: "jawaban" },
-                            on: {
-                              change: function($event) {
-                                return _vm.selectOption(index)
-                              }
-                            },
-                            model: {
-                              value: _vm.selected,
-                              callback: function($$v) {
-                                _vm.selected = $$v
-                              },
-                              expression: "selected"
-                            }
-                          },
-                          [
-                            _c("span", { staticClass: "text-uppercase" }, [
-                              _vm._v(_vm._s(_vm._f("charIndex")(index)))
-                            ]),
-                            _vm._v(". " + _vm._s(jawab.text_jawaban))
-                          ]
-                        )
+              }),
+              _vm._v(" "),
+              _c(
+                "b-form-group",
+                _vm._l(_vm.filleds[_vm.questionIndex].soal.jawabans, function(
+                  jawab,
+                  index
+                ) {
+                  return _c(
+                    "b-form-radio",
+                    {
+                      key: index,
+                      attrs: { name: "jwb", value: jawab.id },
+                      on: {
+                        change: function($event) {
+                          return _vm.selectOption(index)
+                        }
+                      },
+                      model: {
+                        value: _vm.selected,
+                        callback: function($$v) {
+                          _vm.selected = $$v
+                        },
+                        expression: "selected"
                       }
-                    ),
-                    1
+                    },
+                    [
+                      _c("span", { staticClass: "text-uppercase" }, [
+                        _vm._v(_vm._s(_vm._f("charIndex")(index)))
+                      ]),
+                      _vm._v(". "),
+                      _c("span", {
+                        domProps: { innerHTML: _vm._s(jawab.text_jawaban) }
+                      })
+                    ]
+                  )
+                }),
+                1
+              )
+            ],
+            1
+          )
+        : _vm._e(),
+      _vm._v(" "),
+      _vm.filleds
+        ? _c(
+            "div",
+            { staticClass: "card-footer" },
+            [
+              _vm.questionIndex != 0
+                ? _c(
+                    "b-button",
+                    {
+                      attrs: { variant: "secondary", size: "md", squared: "" },
+                      on: {
+                        click: function($event) {
+                          return _vm.prev()
+                        }
+                      }
+                    },
+                    [
+                      _c("i", { staticClass: "cui-chevron-left" }),
+                      _vm._v("   Sebelumnya")
+                    ]
+                  )
+                : _vm._e(),
+              _vm._v(" "),
+              _c(
+                "b-button",
+                { attrs: { variant: "warning", squared: "" } },
+                [
+                  _c(
+                    "b-form-checkbox",
+                    {
+                      attrs: { size: "lg", value: "1" },
+                      model: {
+                        value: _vm.ragu,
+                        callback: function($$v) {
+                          _vm.ragu = $$v
+                        },
+                        expression: "ragu"
+                      }
+                    },
+                    [_vm._v("Ragu ragu")]
                   )
                 ],
                 1
-              )
-            : _vm._e()
-        ]),
-        _vm._v(" "),
-        _c(
-          "div",
-          { staticClass: "card-footer" },
-          [
-            _c(
-              "b-button",
-              {
-                attrs: {
-                  variant: "secondary",
-                  size: "md",
-                  squared: "",
-                  disabled: _vm.questionIndex < 1
-                },
-                on: {
-                  click: function($event) {
-                    return _vm.prev()
-                  }
-                }
-              },
-              [
-                _c("i", { staticClass: "cui-chevron-left" }),
-                _vm._v("   Sebelumnya")
-              ]
-            ),
-            _vm._v(" "),
-            _c(
-              "b-button",
-              {
-                staticClass: "float-right",
-                attrs: {
-                  variant: "success",
-                  size: "md",
-                  squared: "",
-                  disabled:
-                    _vm.questionIndex >= _vm.soals.data.pertanyaans.length
-                },
-                on: {
-                  click: function($event) {
-                    return _vm.next()
-                  }
-                }
-              },
-              [
-                _vm._v("Selanjutnya   "),
-                _c("i", { staticClass: "cui-chevron-right" })
-              ]
-            )
-          ],
-          1
-        )
-      ])
+              ),
+              _vm._v(" "),
+              _vm.questionIndex + 1 != _vm.filleds.length
+                ? _c(
+                    "b-button",
+                    {
+                      staticClass: "float-right",
+                      attrs: { variant: "success", size: "md", squared: "" },
+                      on: {
+                        click: function($event) {
+                          return _vm.next()
+                        }
+                      }
+                    },
+                    [
+                      _vm._v("Selanjutnya   "),
+                      _c("i", { staticClass: "cui-chevron-right" })
+                    ]
+                  )
+                : _vm._e(),
+              _vm._v(" "),
+              _vm.questionIndex + 1 == _vm.soals.length
+                ? _c(
+                    "b-button",
+                    {
+                      staticClass: "float-right",
+                      attrs: { variant: "success", size: "md", squared: "" },
+                      on: {
+                        click: function($event) {
+                          return _vm.next()
+                        }
+                      }
+                    },
+                    [
+                      _vm._v("Selesai   "),
+                      _c("i", { staticClass: "cui-check" })
+                    ]
+                  )
+                : _vm._e()
+            ],
+            1
+          )
+        : _vm._e()
     ]),
     _vm._v(" "),
-    _vm._m(1)
-  ])
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "header",
+    _c(
+      "div",
       {
-        staticClass: "headers",
-        staticStyle: { "background-color": "#2c3e50" }
+        directives: [
+          {
+            name: "show",
+            rawName: "v-show",
+            value: _vm.sidebar,
+            expression: "sidebar"
+          }
+        ],
+        staticClass: "side"
       },
       [
-        _c("div", { staticClass: "group" }, [
-          _c("div", { staticClass: "left py-2 px-4" }, [
-            _c("img", { attrs: { src: "img/brand/dki.png ", width: "65px" } })
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "right" }, [
-            _c("table", { attrs: { width: "100%", border: "0" } }, [
-              _c("tr", [
+        _c(
+          "div",
+          { staticClass: "inner-side" },
+          _vm._l(_vm.filleds, function(fiel, index) {
+            return _c(
+              "button",
+              {
+                staticClass:
+                  "btn btn-outline-secondary my-1 rounded-0 w-2 mx-1",
+                class: {
+                  "btn-primary": index == _vm.questionIndex,
+                  "btn-outline-warning": _vm.ragu
+                },
+                attrs: { type: "button" },
+                on: {
+                  click: function($event) {
+                    return _vm.toLand(index)
+                  }
+                }
+              },
+              [
+                _vm._v("\n\t\t\t\t  " + _vm._s(index + 1) + " "),
                 _c(
-                  "td",
-                  { attrs: { rowspan: "3", width: "90px", align: "center" } },
-                  [
-                    _c("img", {
-                      staticClass: "foto",
-                      attrs: { src: "img/avatars/avatar.png" }
-                    })
-                  ]
+                  "span",
+                  {
+                    directives: [
+                      {
+                        name: "show",
+                        rawName: "v-show",
+                        value: fiel.jawab != 0,
+                        expression: "fiel.jawab != 0"
+                      }
+                    ],
+                    staticClass: "cui-check"
+                  },
+                  [_vm._v(" ")]
                 ),
-                _vm._v(" "),
-                _c("td", [_vm._v("Selamat datang peserta ujian")])
-              ]),
-              _vm._v(" "),
-              _c("tr", [
-                _c("td", [
-                  _c("span", { staticClass: "user" }, [
-                    _vm._v("Jangan lupa berdo'a ")
-                  ])
-                ])
-              ])
-            ])
-          ])
-        ])
+                _c(
+                  "span",
+                  {
+                    directives: [
+                      {
+                        name: "show",
+                        rawName: "v-show",
+                        value: fiel.jawab == 0,
+                        expression: "fiel.jawab == 0"
+                      }
+                    ],
+                    staticClass: "cui-warning"
+                  },
+                  [_vm._v(" ")]
+                )
+              ]
+            )
+          }),
+          0
+        )
+      ]
+    ),
+    _vm._v(" "),
+    _c(
+      "button",
+      { staticClass: "coss btn btn-info rounded-0", on: { click: _vm.toggle } },
+      [
+        _c("i", {
+          directives: [
+            {
+              name: "show",
+              rawName: "v-show",
+              value: !_vm.sidebar,
+              expression: "!sidebar"
+            }
+          ],
+          staticClass: "cui-chevron-left"
+        }),
+        _vm._v(" "),
+        _c("i", {
+          directives: [
+            {
+              name: "show",
+              rawName: "v-show",
+              value: _vm.sidebar,
+              expression: "sidebar"
+            }
+          ],
+          staticClass: "cui-chevron-right"
+        })
       ]
     )
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "fixed-bottom" }, [
-      _c(
-        "div",
-        {
-          staticStyle: {
-            "margin-top": "0px",
-            bottom: "50px",
-            "background-color": "#dcdcdc",
-            padding: "7px",
-            "font-size": "12px"
-          }
-        },
-        [
-          _c("div", { staticClass: "content" }, [
-            _c("strong", [_vm._v(" VLAMP-CBT v1.0")]),
-            _c("br"),
-            _vm._v(" "),
-            _c("strong", [_vm._v(" SystemAppData")])
-          ])
-        ]
-      ),
-      _vm._v(" "),
-      _c("footer", { staticClass: "bg-dark text-center py-2" }, [
-        _vm._v("\n\t\t\t\t© 2019, Shellrean \n\t\t\t")
-      ])
-    ])
-  }
-]
+  ])
+}
+var staticRenderFns = []
 render._withStripped = true
 
 
@@ -44498,14 +44561,21 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", [
-    _c("div", { staticClass: "row" }, [
+  return _c("div", { staticClass: "container" }, [
+    _c("div", { staticClass: "row justify-content-md-center" }, [
       _c("div", { staticClass: "col-md-6" }, [
         _c("div", { staticClass: "card mt-5 rounded-0" }, [
           _c("div", { staticClass: "kiri" }, [
             _vm._m(0),
             _vm._v(" "),
             _c("div", { staticClass: "card-body rounded-0" }, [
+              !_vm.jadwal.mulai
+                ? _c("div", { staticClass: "alert alert-danger rounded-0" }, [
+                    _c("i", { staticClass: "cui-info" }),
+                    _vm._v("   Tidak ada jadwal ujian pada hari ini")
+                  ])
+                : _vm._e(),
+              _vm._v(" "),
               _c("table", { staticClass: "table table-borderless" }, [
                 _c("tr", [
                   _c("td", { attrs: { width: "200px" } }, [_vm._v("No ujian")]),
@@ -44515,82 +44585,82 @@ var render = function() {
                   })
                 ]),
                 _vm._v(" "),
-                _c("tr", [
-                  _c("td", [_vm._v("Mata pelajaran")]),
-                  _vm._v(" "),
-                  _vm.jadwal.banksoal
-                    ? _c("td", {
+                _vm.jadwal.banksoal
+                  ? _c("tr", [
+                      _c("td", [_vm._v("Mata pelajaran")]),
+                      _vm._v(" "),
+                      _c("td", {
                         domProps: {
                           textContent: _vm._s(_vm.jadwal.banksoal.matpel.nama)
                         }
                       })
-                    : _vm._e()
-                ]),
+                    ])
+                  : _vm._e(),
                 _vm._v(" "),
-                _c("tr", [
-                  _c("td", [_vm._v("Status ujian")]),
-                  _vm._v(" "),
-                  _c("td", {
-                    domProps: { textContent: _vm._s(_vm.jadwal.status_ujian) }
-                  })
-                ]),
-                _vm._v(" "),
-                _c("tr", [
-                  _c("td", [_vm._v("Waktu test dibuka")]),
-                  _vm._v(" "),
-                  _c("td", {
-                    domProps: { textContent: _vm._s(_vm.jadwal.mulai) }
-                  })
-                ]),
-                _vm._v(" "),
-                _c("tr", [
-                  _c("td", [_vm._v("Token")]),
-                  _vm._v(" "),
-                  _c("td", [
-                    _c("div", { staticClass: "input-group mb-3" }, [
-                      _c("input", {
-                        directives: [
-                          {
-                            name: "model",
-                            rawName: "v-model",
-                            value: _vm.token_ujian,
-                            expression: "token_ujian"
-                          }
-                        ],
-                        staticClass: "form-control rounded-0",
-                        attrs: { type: "text", placeholder: "Masukkan token" },
-                        domProps: { value: _vm.token_ujian },
-                        on: {
-                          keyup: _vm.resInv,
-                          input: function($event) {
-                            if ($event.target.composing) {
-                              return
-                            }
-                            _vm.token_ujian = $event.target.value
-                          }
-                        }
-                      }),
+                _vm.jadwal.mulai
+                  ? _c("tr", [
+                      _c("td", [_vm._v("Waktu test dibuka")]),
                       _vm._v(" "),
-                      _c("div", { staticClass: "input-group-append" }, [
-                        _c(
-                          "button",
-                          {
-                            staticClass: "btn btn-outline-primary rounded-0",
-                            attrs: { type: "button" },
-                            on: { click: _vm.cekToken }
-                          },
-                          [_vm._v("Submit")]
-                        )
+                      _c("td", {
+                        domProps: { textContent: _vm._s(_vm.jadwal.mulai) }
+                      })
+                    ])
+                  : _vm._e(),
+                _vm._v(" "),
+                _vm.jadwal.token
+                  ? _c("tr", [
+                      _c("td", [_vm._v("Token")]),
+                      _vm._v(" "),
+                      _c("td", [
+                        _c("div", { staticClass: "input-group mb-3" }, [
+                          _c("input", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.token_ujian,
+                                expression: "token_ujian"
+                              }
+                            ],
+                            staticClass: "form-control rounded-0",
+                            attrs: {
+                              type: "text",
+                              placeholder: "Masukkan token"
+                            },
+                            domProps: { value: _vm.token_ujian },
+                            on: {
+                              keyup: _vm.resInv,
+                              input: function($event) {
+                                if ($event.target.composing) {
+                                  return
+                                }
+                                _vm.token_ujian = $event.target.value
+                              }
+                            }
+                          }),
+                          _vm._v(" "),
+                          _c("div", { staticClass: "input-group-append" }, [
+                            _c(
+                              "button",
+                              {
+                                staticClass:
+                                  "btn btn-outline-primary rounded-0",
+                                attrs: { type: "button" },
+                                on: { click: _vm.cekToken }
+                              },
+                              [_vm._v("Submit")]
+                            )
+                          ])
+                        ]),
+                        _vm._v(" "),
+                        _vm.invalidToken
+                          ? _c("small", { staticClass: "text-danger" }, [
+                              _vm._v("Token tidak sesuai dengan pusat")
+                            ])
+                          : _vm._e()
                       ])
-                    ]),
-                    _vm._v(" "),
-                    _vm.invalidToken
-                      ? _c("small", { staticClass: "text-danger" }, [
-                          _vm._v("Token tidak sesuai dengan pusat")
-                        ])
-                      : _vm._e()
-                  ])
-                ])
+                    ])
+                  : _vm._e()
               ])
             ]),
             _vm._v(" "),
@@ -44632,59 +44702,68 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm._m(0)
+  return _c("div", [
+    _c("div", { staticClass: "row" }, [
+      _vm._m(0),
+      _vm._v(" "),
+      _c("div", { staticClass: "col-md-4" }, [
+        _c("div", { staticClass: "card mt-5 rounded-0" }, [
+          _c("div", { staticClass: "card-body" }, [
+            _vm._m(1),
+            _vm._v(" "),
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-block btn-danger rounded-0",
+                on: { click: _vm.start }
+              },
+              [_vm._v("Mulai")]
+            )
+          ])
+        ])
+      ])
+    ])
+  ])
 }
 var staticRenderFns = [
   function() {
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", [
-      _c("div", { staticClass: "row" }, [
-        _c("div", { staticClass: "col-md-8" }, [
-          _c("div", { staticClass: "card mt-5 rounded-0" }, [
-            _c("div", { staticClass: "kiri" }, [
-              _c("div", { staticClass: "card-header rounded-0" }, [
-                _c("h4", [_vm._v("Penting untuk diingat ")])
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "card-body rounded-0" }, [
-                _c("h6", { staticClass: "text-danger" }, [
-                  _c("i", { staticClass: "cui-info" }),
-                  _vm._v("   No system is safe")
-                ]),
-                _vm._v(" "),
-                _c("p", { staticClass: "text-muted" }, [
-                  _vm._v(
-                    "\n\t          \tKita hidup di dunia yang pentuh dengan masalah, jangan sampai menyontek termasuk masalah anda\n\t          "
-                  )
-                ])
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "card-footer" })
-            ])
-          ])
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "col-md-4" }, [
-          _c("div", { staticClass: "card mt-5 rounded-0" }, [
-            _c("div", { staticClass: "card-body" }, [
-              _c("div", { staticClass: "alert alert-warning rounded-0" }, [
-                _c("i", { staticClass: "cui-info" }),
-                _vm._v(
-                  "  \n\t\t\t    \tAnda masih bisa kembali ke tempat ini selama belum memasuki ruang ujian.\n\t\t\t    "
-                )
-              ]),
-              _vm._v(" "),
-              _c(
-                "button",
-                { staticClass: "btn btn-block btn-danger rounded-0" },
-                [_vm._v("Mulai")]
+    return _c("div", { staticClass: "col-md-8" }, [
+      _c("div", { staticClass: "card mt-5 rounded-0" }, [
+        _c("div", { staticClass: "kiri" }, [
+          _c("div", { staticClass: "card-header rounded-0" }, [
+            _c("h4", [_vm._v("Penting untuk diingat ")])
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "card-body rounded-0" }, [
+            _c("h6", { staticClass: "text-danger" }, [
+              _c("i", { staticClass: "cui-info" }),
+              _vm._v("   No system is safe")
+            ]),
+            _vm._v(" "),
+            _c("p", { staticClass: "text-muted" }, [
+              _vm._v(
+                "\n\t          \tKita hidup di dunia yang pentuh dengan masalah, jangan sampai menyontek termasuk masalah anda\n\t          "
               )
             ])
-          ])
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "card-footer" })
         ])
       ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "alert alert-warning rounded-0" }, [
+      _c("i", { staticClass: "cui-info" }),
+      _vm._v(
+        "  \n\t\t\t    \tAnda masih bisa kembali ke tempat ini selama belum memasuki ruang ujian.\n\t\t\t    "
+      )
     ])
   }
 ]
@@ -65452,14 +65531,15 @@ __webpack_require__.r(__webpack_exports__);
 /*!***********************************************!*\
   !*** ./resources/js/pages/ujian/Kerjakan.vue ***!
   \***********************************************/
-/*! exports provided: default */
+/*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Kerjakan_vue_vue_type_template_id_81431a40___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Kerjakan.vue?vue&type=template&id=81431a40& */ "./resources/js/pages/ujian/Kerjakan.vue?vue&type=template&id=81431a40&");
 /* harmony import */ var _Kerjakan_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Kerjakan.vue?vue&type=script&lang=js& */ "./resources/js/pages/ujian/Kerjakan.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _Kerjakan_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _Kerjakan_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
 
 
@@ -65489,7 +65569,7 @@ component.options.__file = "resources/js/pages/ujian/Kerjakan.vue"
 /*!************************************************************************!*\
   !*** ./resources/js/pages/ujian/Kerjakan.vue?vue&type=script&lang=js& ***!
   \************************************************************************/
-/*! exports provided: default */
+/*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -65744,7 +65824,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _pages_ujian_LoginUjian_vue__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./pages/ujian/LoginUjian.vue */ "./resources/js/pages/ujian/LoginUjian.vue");
 /* harmony import */ var _pages_ujian_Index_vue__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./pages/ujian/Index.vue */ "./resources/js/pages/ujian/Index.vue");
 /* harmony import */ var _pages_ujian_UjianKonfirm_vue__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./pages/ujian/UjianKonfirm.vue */ "./resources/js/pages/ujian/UjianKonfirm.vue");
-/* harmony import */ var _pages_ujian_UjianPrepare_vue__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./pages/ujian/UjianPrepare.vue */ "./resources/js/pages/ujian/UjianPrepare.vue");
+/* harmony import */ var _pages_ujian_UjianPrepare_vue__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./pages/ujian/UjianPrepare.vue */ "./resources/js/pages/ujian/UjianPrepare.vue");
 /* harmony import */ var _pages_ujian_Kerjakan_vue__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./pages/ujian/Kerjakan.vue */ "./resources/js/pages/ujian/Kerjakan.vue");
 
 
@@ -65784,9 +65864,9 @@ var router = new vue_router__WEBPACK_IMPORTED_MODULE_1__["default"]({
     }, {
       path: 'prepare',
       name: 'ujian.prepare',
-      component: _pages_ujian_UjianPrepare_vue__WEBPACK_IMPORTED_MODULE_10__["default"]
+      component: _pages_ujian_UjianPrepare_vue__WEBPACK_IMPORTED_MODULE_8__["default"]
     }, {
-      path: 'while',
+      path: 'while/:banksoal',
       name: 'ujian.while',
       component: _pages_ujian_Kerjakan_vue__WEBPACK_IMPORTED_MODULE_9__["default"]
     }]
@@ -65959,6 +66039,7 @@ var actions = {
     localStorage.setItem('token', null);
     localStorage.setItem('nama', null);
     localStorage.setItem('no_ujian', null);
+    localStorage.setItem('id', null);
     commit('SET_TOKEN', null, {
       root: true
     });
@@ -65968,6 +66049,7 @@ var actions = {
           localStorage.setItem('token', response.data.data.api_token);
           localStorage.setItem('nama', response.data.data.nama);
           localStorage.setItem('no_ujian', response.data.data.no_ujian);
+          localStorage.setItem('id', response.data.data.id);
           commit('SET_TOKEN', response.data.data, {
             root: true
           });
@@ -66050,7 +66132,7 @@ var actions = {
     var commit = _ref2.commit,
         state = _ref2.state;
     return new Promise(function (resolve, reject) {
-      _api_js__WEBPACK_IMPORTED_MODULE_0__["default"].get("/ujian/1").then(function (response) {
+      _api_js__WEBPACK_IMPORTED_MODULE_0__["default"].get("/ujian/".concat(payload)).then(function (response) {
         commit('ASSIGN_SOAL_UJIAN', response.data);
         resolve(response.data);
       });
@@ -66288,7 +66370,8 @@ __webpack_require__.r(__webpack_exports__);
 var state = function state() {
   return {
     jawabanPeserta: [],
-    ujianList: []
+    ujianList: [],
+    filledUjian: []
   };
 };
 
@@ -66298,6 +66381,12 @@ var mutations = {
   },
   ASSIGN_DATA_LIST: function ASSIGN_DATA_LIST(state, payload) {
     state.ujianList = payload;
+  },
+  FILLED_DATA_UJIAN: function FILLED_DATA_UJIAN(state, payload) {
+    state.filledUjian = payload;
+  },
+  SLICE_DATA_RESP: function SLICE_DATA_RESP(state, payload) {
+    state.filledUjian.data[payload.index].jawab = payload.data.jawab;
   }
 };
 var actions = {
@@ -66306,6 +66395,7 @@ var actions = {
         state = _ref.state;
     return new Promise(function (resolve, reject) {
       _api_js__WEBPACK_IMPORTED_MODULE_0__["default"].post("/ujian", payload).then(function (response) {
+        commit('SLICE_DATA_RESP', response.data);
         resolve(response.data);
       })["catch"](function (error) {
         if (error.response.status == 422) {
@@ -66332,6 +66422,14 @@ var actions = {
         commit('ASSIGN_DATA_LIST', response.data);
         resolve(response.data);
       });
+    });
+  },
+  takeFilled: function takeFilled(_ref4, payload) {
+    var commit = _ref4.commit;
+    return new Promise(function (resolve, reject) {
+      _api_js__WEBPACK_IMPORTED_MODULE_0__["default"].post("/ujian/filled", payload).then(function (response) {
+        commit('FILLED_DATA_UJIAN', response.data);
+      })["catch"](function (error) {});
     });
   }
 };
@@ -66362,7 +66460,12 @@ var state = function state() {
     roles: [],
     permissions: [],
     role_permission: [],
-    authenticated: []
+    authenticated: [],
+    pesertaDetail: {
+      nama: localStorage.getItem('nama'),
+      no_ujian: localStorage.getItem('no_ujian'),
+      id: localStorage.getItem('id')
+    }
   };
 };
 

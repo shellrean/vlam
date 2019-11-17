@@ -1,117 +1,129 @@
 <template>
 	<div>
-		<header style="background-color: #2c3e50;" class="headers">
-			<div class="group">
-  	  			<div class="left py-2 px-4">
-  	  				<img src="img/brand/dki.png " width="65px">
-  	  			</div>
-		  	  	<div class="right">
-		  	  		<table width="100%" border="0">   
-		     			<tr><td rowspan="3" width="90px" align="center"><img src="img/avatars/avatar.png" class="foto" ></td>
-						<td>Selamat datang peserta ujian</td></tr>
-						<tr><td><span class="user">Jangan lupa berdo'a </span></td></tr>
-					</table>
-		  	  	</div>
-		  	</div>
-		</header>
-		<div class="container-fluid mt-5">
-		    <div class="card">
-		    	<div class="card-header">
-		    		SOAL NO. <b-button variant="primary" size="sm" squared disabled >{{ questionIndex+1 }}</b-button>
-		    		<b-button variant="outline-dark" class="float-right" size="sm" squared disabled>Siwa waktu: 17:00</b-button>
-		    	</div>
-		    	<div class="card-body">
-		    		<div class="questionContainer" v-if="questionIndex<soals.data.pertanyaans.length" :key="questionIndex">
-		    			<p>{{ soals.data.pertanyaans[questionIndex].pertanyaan }}</p>
-		    			<b-form-group>
-					      <b-form-radio v-for="(jawab,index) in soals.data.pertanyaans[questionIndex].jawabans" :key="index" v-model="selected"  :value="jawab.id" name="jawaban" @change="selectOption(index)"><span class="text-uppercase">{{ index | charIndex }}</span>. {{ jawab.text_jawaban }}</b-form-radio>
-					    </b-form-group>
-		    		</div>
-		    	</div>
-		    	<div class="card-footer">
-		    		<b-button variant="secondary" size="md" squared @click="prev()" :disabled="questionIndex < 1"><i class="cui-chevron-left"></i> &nbsp; Sebelumnya</b-button>
-
-		    		<b-button variant="success" class="float-right" size="md" squared @click="next()" :disabled="questionIndex >= soals.data.pertanyaans.length">Selanjutnya &nbsp; <i class="cui-chevron-right"></i></b-button>
-		    	</div>
-
-		   	</div>
-		</div>
-		<div class="fixed-bottom">
-		 	<div style="margin-top:0px; bottom:50px; background-color:#dcdcdc; padding:7px; font-size:12px">
-		    	<div class="content">
-			 	<strong> VLAMP-CBT v1.0</strong><br>
-			 	<strong> SystemAppData</strong>
-		    	</div>
+		<div class="card mt-5">
+			<div class="card-header">
+				SOAL NO. 
+		    	<b-button variant="primary" size="sm" squared disabled >{{ questionIndex+1 }}</b-button>
+		    	<b-button variant="outline-dark" class="float-right" size="sm" squared disabled>Siwa waktu: 17:00</b-button>
 			</div>
-		 	<footer class="bg-dark text-center py-2">
-				&copy; 2019, Shellrean 
-			</footer>
+			<div class="card-body" v-if="filleds">
+		    	<p v-html="filleds[questionIndex].soal.pertanyaan"></p>
+		    	<b-form-group>
+		    		<b-form-radio v-for="(jawab,index) in filleds[questionIndex].soal.jawabans" :key="index" v-model="selected" name="jwb" :value="jawab.id" @change="selectOption(index)">
+		    			<span class="text-uppercase">{{ index | charIndex }}</span>. <span v-html="jawab.text_jawaban"></span>
+		    		</b-form-radio>
+		    	</b-form-group>
+		    </div>
+		    <div class="card-footer" v-if="filleds">
+		    	<b-button variant="secondary" size="md" squared @click="prev()" v-if="questionIndex != 0"><i class="cui-chevron-left"></i> &nbsp; Sebelumnya</b-button>
+
+  				<b-button variant="warning" squared>
+  					<b-form-checkbox size="lg" value="1" v-model="ragu">Ragu ragu</b-form-checkbox>
+  				</b-button>
+
+		    	<b-button variant="success" class="float-right" size="md" squared @click="next()" v-if="questionIndex+1 != filleds.length">Selanjutnya &nbsp; <i class="cui-chevron-right"></i></b-button>
+		    	<b-button variant="success" class="float-right" size="md" squared @click="next()" v-if="questionIndex+1 == soals.length">Selesai &nbsp; <i class="cui-check"></i></b-button>
+		    </div>
 		</div>
+		<div class="side" v-show="sidebar">
+			<div class="inner-side">
+				<button type="button" class="btn btn-outline-secondary my-1 rounded-0 w-2 mx-1" v-for="(fiel,index) in filleds" :class="{ 'btn-primary': (index == questionIndex), 'btn-outline-warning' : ragu}" @click="toLand(index)">
+				  {{ index+1 }} <span class="cui-check" v-show="fiel.jawab != 0">&nbsp;</span><span class="cui-warning" v-show="fiel.jawab == 0">&nbsp;</span>
+				</button>
+			</div>
+		</div>
+		<button class="coss btn btn-info rounded-0" @click="toggle"> 
+			<i class="cui-chevron-left" v-show="!sidebar"></i>
+			<i class="cui-chevron-right" v-show="sidebar"></i>
+		</button>
 	</div>
 </template>
 <script>
-	import { mapActions, mapState } from 'vuex' 
+import { mapActions, mapState } from 'vuex'
+export default {
+	name: 'DataUjian',
+	created() {
+		this.getAllSoal()
+	},
+	data() {
+		return {
+			questionIndex: 0,
+			selected: '',
+			patt: 17,
+			sidebar: false,
+			ragu: 0
+		}
+	},
+	filters: {
+		charIndex(i) {
+			return String.fromCharCode(97 + i)
+		}
+	},
+	computed: {
+		...mapState('banksoal', { soals: state => state.ujian.data }),
+		...mapState('ujian',{ 
+			jawabanPeserta: state => state.jawabanPeserta,
+			filleds: state => state.filledUjian.data
+		}),
+		...mapState('user', {
+        	peserta: state => state.pesertaDetail
+      	})
+	},
+	methods: {
+		...mapActions('banksoal', ['getUjian']),
+		...mapActions('ujian', ['submitJawaban','takeFilled']),
+		getAllSoal() {
+			this.getUjian(this.$route.params.banksoal)
+			.then((resp) => {
 
-	export default {
-		name: 'DataBanksoal',
-	    created() {
-	        this.getUjian()
-	        this.getJawabanPeserta()
-	    },
-		data() {
-			return {
-				questionIndex: 0,
-				selected: ''
-			}
+			})
 		},
-		filters: {
-	      charIndex: function(i) {
-	         return String.fromCharCode(97 + i);
-	      }
-	   	},
-		computed: {
-	        ...mapState('banksoal', {
-	            soals: state => state.ujian
-	        }),
-	        ...mapState('ujian', {
-	        	jawabanPeserta: state => state.jawabanPeserta
-	        })
-	    },
-		methods: {
-        	...mapActions('banksoal', ['getUjian']),
-        	...mapActions('ujian',['submitJawaban','getJawabanPeserta']),
-        	prev() {
-		        if (this.soals.data.pertanyaans.length > 0) this.questionIndex--;
-		    },
-		    next() {
-		        if (this.questionIndex < this.soals.data.pertanyaans.length)
-		            this.questionIndex++;
-		    },
-		    selectOption(index) {
-		    	const pertanyaan = this.soals.data.pertanyaans[this.questionIndex]
-	         	let data = {
-	         		banksoal_id: this.soals.data.id,
-	         		soal_id : pertanyaan.id,
-	         		jawab : pertanyaan.jawabans[index].id,
-	         		correct: pertanyaan.jawabans[index].correct
-	         	}
+		filledAllSoal() {
+			const payld = {
+				peserta_id: this.peserta.id,
+				banksoal: this.soals.id
+			}
+			this.takeFilled(payld) 
+			.then((resp) => {
 
-	         	this.submitJawaban({ data })
-	      	},
-	      	getData(index) {
-	      		this.getJawabanPeserta(this.soals.data.pertanyaans[index].id)
-	      		.then((res) => {
-	      			this.selected = res.data.jawab
-	      		})
-	      	}
-        },
-        watch: {
-		    questionIndex(val) {
-		    	this.getData(val)
-		    },
-		    soals(val) {
-		    	this.getData(0)
-		    }
+			})
+		},
+		selectOption(index) {
+			const fill = this.filleds[this.questionIndex]
+
+	        this.submitJawaban({ 
+	        	banksoal_id: fill.banksoal_id,
+	        	soal_id : fill.soal_id,
+	        	jawab : this.filleds[this.questionIndex].soal.jawabans[index].id,
+	        	correct: this.filleds[this.questionIndex].soal.jawabans[index].correct,
+	        	peserta_id: this.peserta.id,
+	        	index : this.questionIndex
+	        })
+		},
+		prev() {
+		    if (this.filleds.length > 0) this.questionIndex--
+		},
+		next() {
+			if (this.questionIndex < this.filleds.length) this.questionIndex++
+		},
+		toggle() {
+	    	this.sidebar = !this.sidebar;
+	    },
+	    toLand(index) {
+	    	this.questionIndex = index
+	    }
+	},
+	watch: {
+		soals(val) {
+			this.filledAllSoal()
+		},
+		questionIndex() {
+			this.selected = this.filleds[this.questionIndex
+			].jawab
+		},
+		filleds() {
+			this.selected = this.filleds[this.questionIndex].jawab
 		}
 	}
+}
 </script>
