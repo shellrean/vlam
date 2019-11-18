@@ -22,14 +22,34 @@
   				</b-button>
 
 		    	<b-button variant="success" class="float-right" size="md" squared @click="next()" v-if="questionIndex+1 != filleds.length">Selanjutnya &nbsp; <i class="cui-chevron-right"></i></b-button>
-		    	<b-button variant="success" class="float-right" size="md" squared v-b-modal.modal-no-backdrop v-if="questionIndex+1 == filleds.length">Selesai &nbsp; <i class="cui-check"></i></b-button>
+		    	<b-button variant="success" class="float-right" size="md" squared @click="$bvModal.show('modal-selesai')" v-if="questionIndex+1 == filleds.length && checkRagu() == false">Selesai &nbsp; <i class="cui-check"></i></b-button>
+		    	<b-button variant="danger" class="float-right" size="md" squared v-b-modal.modal-1 v-if="questionIndex+1 == filleds.length && checkRagu() == true">Selesai &nbsp; <i class="cui-check"></i></b-button>
+		    	
+				<b-modal id="modal-1" title="Peringatan" ok-only v-if="checkRagu()">
+				  <p class="my-4"><i class="cui-warning"></i> &nbsp; Masih ada jawaban ragu ragu. </p>
+				</b-modal>
+
+
 		    </div>
 		</div>
-		<b-modal id="modal-no-backdrop" hide-backdrop squared content-class="shadow" title="BootstrapVue">
-		    <p class="my-2">
-		      <i class="cui-warning"></i>
-		    </p>
-		</b-modal>
+		<b-modal id="modal-selesai">
+		    <template v-slot:modal-header="{ close }">
+		      <h5>Konfirmasi</h5>
+		    </template>
+
+		    <template v-slot:default="{ hide }">
+			  <b-form-checkbox size="lg" v-model="isKonfirm">Saya sudah selesai mengerjakan</b-form-checkbox>
+		    </template>
+
+		    <template v-slot:modal-footer="{ cancel }">
+		      <b-button size="sm" variant="success" @click="selesai()" :disabled="!isKonfirm">
+		        Selesai
+		      </b-button>
+		      <b-button size="sm" variant="danger" @click="cancel()">
+		        Cancel
+		      </b-button>
+		    </template>
+		  </b-modal>
 
 		<div class="side" v-show="sidebar">
 			<div class="inner-side">
@@ -63,7 +83,9 @@ export default {
 			patt: 17,
 			sidebar: false,
 			ragu: '',
-			time: 0
+			time: 0,
+			isKonfirm : false,
+			interval: ''
 		}
 	},
 	filters: {
@@ -91,7 +113,7 @@ export default {
 	},
 	methods: {
 		...mapActions('banksoal', ['getUjian']),
-		...mapActions('ujian', ['submitJawaban','takeFilled','updateWaktuSiswa','updateRaguJawaban']),
+		...mapActions('ujian', ['submitJawaban','takeFilled','updateWaktuSiswa','updateRaguJawaban','selesaiUjianPeserta']),
 		getAllSoal() {
 			this.getUjian(this.$route.params.banksoal)
 			.then((resp) => {
@@ -123,38 +145,26 @@ export default {
 			const fill = this.filleds[this.questionIndex]
 
 	        this.submitJawaban({ 
-	        	jadwal_id: this.$route.params.jadwal_id,
-	        	banksoal_id: fill.banksoal_id,
-	        	soal_id : fill.soal_id,
+	        	jawaban_id : this.filleds[this.questionIndex].id,
 	        	jawab : this.filleds[this.questionIndex].soal.jawabans[index].id,
 	        	correct: this.filleds[this.questionIndex].soal.jawabans[index].correct,
-	        	peserta_id: this.peserta.id,
 	        	index : this.questionIndex
 	        })
 		},
 		raguRagu(val) {
 			this.updateRaguJawaban({
-				jadwal_id : this.$route.params.jadwal_id,
-				banksoal: this.$route.params.banksoal,
-				soal_id: this.filleds[this.questionIndex].id,
 				ragu_ragu: val,
 				index: this.questionIndex,
-				peserta_id: this.peserta.id,
+				jawaban_id : this.filleds[this.questionIndex].id
 			})
 		},
 		selesai() {
+			this.selesaiUjianPeserta({
+				peserta_id : this.peserta.id,
+				jadwal_id : this.detail.jadwal_id
+			})
 			this.$router.push({ name: 'ujian.selesai' })
-		},
-		selesaiUjian() {
-			this.$swal({
-                title: 'Kamu Yakin?',
-                text: "Tindakan ini akan menghapus secara permanent!",
-                type: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Iya, Lanjutkan!'
-            })
+			clearInterval(this.interval); 
 		},
 		prev() {
 		    if (this.filleds.length > 0) this.questionIndex--
@@ -176,6 +186,20 @@ export default {
 
 				}
 			}, 1000 )
+		},
+		checkRagu() {
+			let ragger = 0
+			this.filleds
+			.filter(function(element) {
+			    if (element.ragu_ragu == "1") {
+			       ragger++
+			    }
+			})
+
+			if (ragger > 0) {
+				return true
+			}
+			return false
 		}
 	},
 	watch: {
@@ -193,7 +217,7 @@ export default {
 		},
 		detail(val) {
 			this.time = val.sisa_waktu
-			setInterval( () => {
+			this.interval = setInterval( () => {
 				if (this.time > 0) {
 					this.updateSisaWaktu(this.time)
 				} else {

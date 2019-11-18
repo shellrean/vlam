@@ -24,13 +24,11 @@ class UjianController extends Controller
     {
 
         $find = JawabanPeserta::where([
-            'soal_id'       => $request->soal_id,
-            'peserta_id'    => $request->peserta_id,
-            'jadwal_id'     => $request->jadwal_id,
-            'banksoal_id'   => $request->banksoal_id
+            'id'            => $request->jawaban_id
         ])->first();
 
         $find->jawab = $request->jawab;
+        $find->iscorrect = $request->correct;
         $find->save();
 
     	return response()->json(['data' => $find,'index' => $request->index]);
@@ -40,10 +38,7 @@ class UjianController extends Controller
     public function setRagu(Request $request) 
     {
         $find = JawabanPeserta::where([
-            'soal_id'       => $request->soal_id,
-            'peserta_id'    => $request->peserta_id,
-            'jadwal_id'     => $request->jadwal_id,
-            'banksoal_id'   => $request->banksoal
+            'id'            => $request->jawaban_id
         ])->first();
 
         $find->ragu_ragu = $request->ragu_ragu;
@@ -101,13 +96,21 @@ class UjianController extends Controller
                     'ragu_ragu'     => 0
                 ]);
             }
+            
+            $detail = SiswaUjian::where([
+                'jadwal_id'     => $jadwal_id,
+                'peserta_id'    => $user_id
+            ])->first();
 
-            $find = JawabanPeserta::with(['soal','soal.jawabans'])->where([
+
+            $find = JawabanPeserta::with([
+                'soal','soal.jawabans'
+            ])->where([
                 'peserta_id'    => $user_id, 
                 'jadwal_id'     => $jadwal_id,
             ])->get();
             
-            return response()->json(['data' => $all]);
+            return response()->json(['data' => $find, 'detail' => $detail]);
         }
         
         $detail = SiswaUjian::where([
@@ -151,5 +154,18 @@ class UjianController extends Controller
         }
 
         return response()->json(['data' => $ujian]);
+    }
+
+    public function selesai(Request $request)
+    {
+        $ujian = SiswaUjian::where([
+            'jadwal_id'     => $request->jadwal_id, 
+            'peserta_id'    => $request->peserta_id
+        ])->first();
+
+        $ujian->status_ujian = 1;
+        $ujian->save();
+
+        return response()->json(['finished']);
     }
 }

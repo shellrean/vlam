@@ -8737,6 +8737,26 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'DataUjian',
@@ -8751,7 +8771,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       patt: 17,
       sidebar: false,
       ragu: '',
-      time: 0
+      time: 0,
+      isKonfirm: false,
+      interval: ''
     };
   },
   filters: {
@@ -8786,7 +8808,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return hours + ':' + minutes + ':' + seconds;
     }
   }),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('banksoal', ['getUjian']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('ujian', ['submitJawaban', 'takeFilled', 'updateWaktuSiswa', 'updateRaguJawaban']), {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('banksoal', ['getUjian']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('ujian', ['submitJawaban', 'takeFilled', 'updateWaktuSiswa', 'updateRaguJawaban', 'selesaiUjianPeserta']), {
     getAllSoal: function getAllSoal() {
       this.getUjian(this.$route.params.banksoal).then(function (resp) {});
     },
@@ -8808,40 +8830,28 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     selectOption: function selectOption(index) {
       var fill = this.filleds[this.questionIndex];
       this.submitJawaban({
-        jadwal_id: this.$route.params.jadwal_id,
-        banksoal_id: fill.banksoal_id,
-        soal_id: fill.soal_id,
+        jawaban_id: this.filleds[this.questionIndex].id,
         jawab: this.filleds[this.questionIndex].soal.jawabans[index].id,
         correct: this.filleds[this.questionIndex].soal.jawabans[index].correct,
-        peserta_id: this.peserta.id,
         index: this.questionIndex
       });
     },
     raguRagu: function raguRagu(val) {
       this.updateRaguJawaban({
-        jadwal_id: this.$route.params.jadwal_id,
-        banksoal: this.$route.params.banksoal,
-        soal_id: this.filleds[this.questionIndex].id,
         ragu_ragu: val,
         index: this.questionIndex,
-        peserta_id: this.peserta.id
+        jawaban_id: this.filleds[this.questionIndex].id
       });
     },
     selesai: function selesai() {
+      this.selesaiUjianPeserta({
+        peserta_id: this.peserta.id,
+        jadwal_id: this.detail.jadwal_id
+      });
       this.$router.push({
         name: 'ujian.selesai'
       });
-    },
-    selesaiUjian: function selesaiUjian() {
-      this.$swal({
-        title: 'Kamu Yakin?',
-        text: "Tindakan ini akan menghapus secara permanent!",
-        type: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Iya, Lanjutkan!'
-      });
+      clearInterval(this.interval);
     },
     prev: function prev() {
       if (this.filleds.length > 0) this.questionIndex--;
@@ -8863,6 +8873,20 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           _this.time--;
         } else {}
       }, 1000);
+    },
+    checkRagu: function checkRagu() {
+      var ragger = 0;
+      this.filleds.filter(function (element) {
+        if (element.ragu_ragu == "1") {
+          ragger++;
+        }
+      });
+
+      if (ragger > 0) {
+        return true;
+      }
+
+      return false;
     }
   }),
   watch: {
@@ -8881,7 +8905,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var _this2 = this;
 
       this.time = val.sisa_waktu;
-      setInterval(function () {
+      this.interval = setInterval(function () {
         if (_this2.time > 0) {
           _this2.updateSisaWaktu(_this2.time);
         } else {
@@ -9331,6 +9355,9 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
+  created: function created() {
+    clearInterval();
+  },
   methods: {
     logout: function logout() {
       var _this = this;
@@ -44339,23 +44366,63 @@ var render = function() {
                     )
                   : _vm._e(),
                 _vm._v(" "),
-                _vm.questionIndex + 1 == _vm.filleds.length
+                _vm.questionIndex + 1 == _vm.filleds.length &&
+                _vm.checkRagu() == false
+                  ? _c(
+                      "b-button",
+                      {
+                        staticClass: "float-right",
+                        attrs: { variant: "success", size: "md", squared: "" },
+                        on: {
+                          click: function($event) {
+                            return _vm.$bvModal.show("modal-selesai")
+                          }
+                        }
+                      },
+                      [
+                        _vm._v("Selesai   "),
+                        _c("i", { staticClass: "cui-check" })
+                      ]
+                    )
+                  : _vm._e(),
+                _vm._v(" "),
+                _vm.questionIndex + 1 == _vm.filleds.length &&
+                _vm.checkRagu() == true
                   ? _c(
                       "b-button",
                       {
                         directives: [
                           {
                             name: "b-modal",
-                            rawName: "v-b-modal.modal-no-backdrop",
-                            modifiers: { "modal-no-backdrop": true }
+                            rawName: "v-b-modal.modal-1",
+                            modifiers: { "modal-1": true }
                           }
                         ],
                         staticClass: "float-right",
-                        attrs: { variant: "success", size: "md", squared: "" }
+                        attrs: { variant: "danger", size: "md", squared: "" }
                       },
                       [
                         _vm._v("Selesai   "),
                         _c("i", { staticClass: "cui-check" })
+                      ]
+                    )
+                  : _vm._e(),
+                _vm._v(" "),
+                _vm.checkRagu()
+                  ? _c(
+                      "b-modal",
+                      {
+                        attrs: {
+                          id: "modal-1",
+                          title: "Peringatan",
+                          "ok-only": ""
+                        }
+                      },
+                      [
+                        _c("p", { staticClass: "my-4" }, [
+                          _c("i", { staticClass: "cui-warning" }),
+                          _vm._v("   Masih ada jawaban ragu ragu. ")
+                        ])
                       ]
                     )
                   : _vm._e()
@@ -44365,23 +44432,77 @@ var render = function() {
           : _vm._e()
       ]),
       _vm._v(" "),
-      _c(
-        "b-modal",
-        {
-          attrs: {
-            id: "modal-no-backdrop",
-            "hide-backdrop": "",
-            squared: "",
-            "content-class": "shadow",
-            title: "BootstrapVue"
+      _c("b-modal", {
+        attrs: { id: "modal-selesai" },
+        scopedSlots: _vm._u([
+          {
+            key: "modal-header",
+            fn: function(ref) {
+              var close = ref.close
+              return [_c("h5", [_vm._v("Konfirmasi")])]
+            }
+          },
+          {
+            key: "default",
+            fn: function(ref) {
+              var hide = ref.hide
+              return [
+                _c(
+                  "b-form-checkbox",
+                  {
+                    attrs: { size: "lg" },
+                    model: {
+                      value: _vm.isKonfirm,
+                      callback: function($$v) {
+                        _vm.isKonfirm = $$v
+                      },
+                      expression: "isKonfirm"
+                    }
+                  },
+                  [_vm._v("Saya sudah selesai mengerjakan")]
+                )
+              ]
+            }
+          },
+          {
+            key: "modal-footer",
+            fn: function(ref) {
+              var cancel = ref.cancel
+              return [
+                _c(
+                  "b-button",
+                  {
+                    attrs: {
+                      size: "sm",
+                      variant: "success",
+                      disabled: !_vm.isKonfirm
+                    },
+                    on: {
+                      click: function($event) {
+                        return _vm.selesai()
+                      }
+                    }
+                  },
+                  [_vm._v("\n\t\t        Selesai\n\t\t      ")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "b-button",
+                  {
+                    attrs: { size: "sm", variant: "danger" },
+                    on: {
+                      click: function($event) {
+                        return cancel()
+                      }
+                    }
+                  },
+                  [_vm._v("\n\t\t        Cancel\n\t\t      ")]
+                )
+              ]
+            }
           }
-        },
-        [
-          _c("p", { staticClass: "my-2" }, [
-            _c("i", { staticClass: "cui-warning" })
-          ])
-        ]
-      ),
+        ])
+      }),
       _vm._v(" "),
       _c(
         "div",
@@ -64286,7 +64407,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "mapActions", function() { return mapActions; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createNamespacedHelpers", function() { return createNamespacedHelpers; });
 /**
- * vuex v3.1.1
+ * vuex v3.1.2
  * (c) 2019 Evan You
  * @license MIT
  */
@@ -64608,6 +64729,7 @@ var Store = function Store (options) {
   this._modulesNamespaceMap = Object.create(null);
   this._subscribers = [];
   this._watcherVM = new Vue();
+  this._makeLocalGettersCache = Object.create(null);
 
   // bind commit and dispatch to self
   var store = this;
@@ -64840,12 +64962,14 @@ function resetStoreVM (store, state, hot) {
 
   // bind store public getters
   store.getters = {};
+  // reset local getters cache
+  store._makeLocalGettersCache = Object.create(null);
   var wrappedGetters = store._wrappedGetters;
   var computed = {};
   forEachValue(wrappedGetters, function (fn, key) {
     // use computed to leverage its lazy-caching mechanism
     // direct inline function use will lead to closure preserving oldVm.
-    // using partial to return function with only arguments preserved in closure enviroment.
+    // using partial to return function with only arguments preserved in closure environment.
     computed[key] = partial(fn, store);
     Object.defineProperty(store.getters, key, {
       get: function () { return store._vm[key]; },
@@ -64889,6 +65013,9 @@ function installModule (store, rootState, path, module, hot) {
 
   // register in namespace map
   if (module.namespaced) {
+    if (store._modulesNamespaceMap[namespace] && "development" !== 'production') {
+      console.error(("[vuex] duplicate namespace " + namespace + " for the namespaced module " + (path.join('/'))));
+    }
     store._modulesNamespaceMap[namespace] = module;
   }
 
@@ -64897,6 +65024,13 @@ function installModule (store, rootState, path, module, hot) {
     var parentState = getNestedState(rootState, path.slice(0, -1));
     var moduleName = path[path.length - 1];
     store._withCommit(function () {
+      if (true) {
+        if (moduleName in parentState) {
+          console.warn(
+            ("[vuex] state field \"" + moduleName + "\" was overridden by a module with the same name at \"" + (path.join('.')) + "\"")
+          );
+        }
+      }
       Vue.set(parentState, moduleName, module.state);
     });
   }
@@ -64984,26 +65118,28 @@ function makeLocalContext (store, namespace, path) {
 }
 
 function makeLocalGetters (store, namespace) {
-  var gettersProxy = {};
+  if (!store._makeLocalGettersCache[namespace]) {
+    var gettersProxy = {};
+    var splitPos = namespace.length;
+    Object.keys(store.getters).forEach(function (type) {
+      // skip if the target getter is not match this namespace
+      if (type.slice(0, splitPos) !== namespace) { return }
 
-  var splitPos = namespace.length;
-  Object.keys(store.getters).forEach(function (type) {
-    // skip if the target getter is not match this namespace
-    if (type.slice(0, splitPos) !== namespace) { return }
+      // extract local getter type
+      var localType = type.slice(splitPos);
 
-    // extract local getter type
-    var localType = type.slice(splitPos);
-
-    // Add a port to the getters proxy.
-    // Define as getter property because
-    // we do not want to evaluate the getters in this time.
-    Object.defineProperty(gettersProxy, localType, {
-      get: function () { return store.getters[type]; },
-      enumerable: true
+      // Add a port to the getters proxy.
+      // Define as getter property because
+      // we do not want to evaluate the getters in this time.
+      Object.defineProperty(gettersProxy, localType, {
+        get: function () { return store.getters[type]; },
+        enumerable: true
+      });
     });
-  });
+    store._makeLocalGettersCache[namespace] = gettersProxy;
+  }
 
-  return gettersProxy
+  return store._makeLocalGettersCache[namespace]
 }
 
 function registerMutation (store, type, handler, local) {
@@ -65015,7 +65151,7 @@ function registerMutation (store, type, handler, local) {
 
 function registerAction (store, type, handler, local) {
   var entry = store._actions[type] || (store._actions[type] = []);
-  entry.push(function wrappedActionHandler (payload, cb) {
+  entry.push(function wrappedActionHandler (payload) {
     var res = handler.call(store, {
       dispatch: local.dispatch,
       commit: local.commit,
@@ -65023,7 +65159,7 @@ function registerAction (store, type, handler, local) {
       state: local.state,
       rootGetters: store.getters,
       rootState: store.state
-    }, payload, cb);
+    }, payload);
     if (!isPromise(res)) {
       res = Promise.resolve(res);
     }
@@ -65104,6 +65240,9 @@ function install (_Vue) {
  */
 var mapState = normalizeNamespace(function (namespace, states) {
   var res = {};
+  if ( true && !isValidMap(states)) {
+    console.error('[vuex] mapState: mapper parameter must be either an Array or an Object');
+  }
   normalizeMap(states).forEach(function (ref) {
     var key = ref.key;
     var val = ref.val;
@@ -65137,6 +65276,9 @@ var mapState = normalizeNamespace(function (namespace, states) {
  */
 var mapMutations = normalizeNamespace(function (namespace, mutations) {
   var res = {};
+  if ( true && !isValidMap(mutations)) {
+    console.error('[vuex] mapMutations: mapper parameter must be either an Array or an Object');
+  }
   normalizeMap(mutations).forEach(function (ref) {
     var key = ref.key;
     var val = ref.val;
@@ -65170,6 +65312,9 @@ var mapMutations = normalizeNamespace(function (namespace, mutations) {
  */
 var mapGetters = normalizeNamespace(function (namespace, getters) {
   var res = {};
+  if ( true && !isValidMap(getters)) {
+    console.error('[vuex] mapGetters: mapper parameter must be either an Array or an Object');
+  }
   normalizeMap(getters).forEach(function (ref) {
     var key = ref.key;
     var val = ref.val;
@@ -65200,6 +65345,9 @@ var mapGetters = normalizeNamespace(function (namespace, getters) {
  */
 var mapActions = normalizeNamespace(function (namespace, actions) {
   var res = {};
+  if ( true && !isValidMap(actions)) {
+    console.error('[vuex] mapActions: mapper parameter must be either an Array or an Object');
+  }
   normalizeMap(actions).forEach(function (ref) {
     var key = ref.key;
     var val = ref.val;
@@ -65245,9 +65393,21 @@ var createNamespacedHelpers = function (namespace) { return ({
  * @return {Object}
  */
 function normalizeMap (map) {
+  if (!isValidMap(map)) {
+    return []
+  }
   return Array.isArray(map)
     ? map.map(function (key) { return ({ key: key, val: key }); })
     : Object.keys(map).map(function (key) { return ({ key: key, val: map[key] }); })
+}
+
+/**
+ * Validate whether given map is valid or not
+ * @param {*} map
+ * @return {Boolean}
+ */
+function isValidMap (map) {
+  return Array.isArray(map) || isObject(map)
 }
 
 /**
@@ -65285,7 +65445,7 @@ function getModuleByNamespace (store, helper, namespace) {
 var index_esm = {
   Store: Store,
   install: install,
-  version: '3.1.1',
+  version: '3.1.2',
   mapState: mapState,
   mapMutations: mapMutations,
   mapGetters: mapGetters,
@@ -66854,6 +67014,7 @@ var mutations = {
   },
   SLICE_DATA_RESP: function SLICE_DATA_RESP(state, payload) {
     state.filledUjian.data[payload.index].jawab = payload.data.jawab;
+    state.filledUjian.data[payload.index].iscorrect = payload.data.iscorrect;
   },
   SLICE_RAGU_JAWABAN: function SLICE_RAGU_JAWABAN(state, payload) {
     state.filledUjian.data[payload.index].ragu_ragu = payload.data.ragu_ragu;
@@ -66889,8 +67050,16 @@ var actions = {
       })["catch"](function (error) {});
     });
   },
-  getJawabanPeserta: function getJawabanPeserta(_ref3, payload) {
+  selesaiUjianPeserta: function selesaiUjianPeserta(_ref3, payload) {
     var commit = _ref3.commit;
+    return new Promise(function (resolve, reject) {
+      _api_js__WEBPACK_IMPORTED_MODULE_0__["default"].post("/ujian/selesai", payload).then(function (response) {
+        resolve(response.daa);
+      });
+    });
+  },
+  getJawabanPeserta: function getJawabanPeserta(_ref4, payload) {
+    var commit = _ref4.commit;
     return new Promise(function (resolve, reject) {
       _api_js__WEBPACK_IMPORTED_MODULE_0__["default"].get("/ujian/jawaban/".concat(payload)).then(function (response) {
         commit('ASSIGN_DATA_JAWABAN', response.data);
@@ -66898,8 +67067,8 @@ var actions = {
       });
     });
   },
-  getUjianList: function getUjianList(_ref4, payload) {
-    var commit = _ref4.commit;
+  getUjianList: function getUjianList(_ref5, payload) {
+    var commit = _ref5.commit;
     return new Promise(function (resolve, reject) {
       _api_js__WEBPACK_IMPORTED_MODULE_0__["default"].post("/ujian/daftar").then(function (response) {
         commit('ASSIGN_DATA_LIST', response.data);
@@ -66907,24 +67076,24 @@ var actions = {
       });
     });
   },
-  takeFilled: function takeFilled(_ref5, payload) {
-    var commit = _ref5.commit;
+  takeFilled: function takeFilled(_ref6, payload) {
+    var commit = _ref6.commit;
     return new Promise(function (resolve, reject) {
       _api_js__WEBPACK_IMPORTED_MODULE_0__["default"].post("/ujian/filled", payload).then(function (response) {
         commit('FILLED_DATA_UJIAN', response.data);
       })["catch"](function (error) {});
     });
   },
-  updateWaktuSiswa: function updateWaktuSiswa(_ref6, payload) {
-    var commit = _ref6.commit;
+  updateWaktuSiswa: function updateWaktuSiswa(_ref7, payload) {
+    var commit = _ref7.commit;
     return new Promise(function (resolve, reject) {
       _api_js__WEBPACK_IMPORTED_MODULE_0__["default"].post("/ujian/sisa-waktu", payload).then(function (response) {
         resolve(response.data);
       })["catch"](function (error) {});
     });
   },
-  getPesertaDataUjian: function getPesertaDataUjian(_ref7, payload) {
-    var commit = _ref7.commit;
+  getPesertaDataUjian: function getPesertaDataUjian(_ref8, payload) {
+    var commit = _ref8.commit;
     return new Promise(function (resolve, reject) {
       _api_js__WEBPACK_IMPORTED_MODULE_0__["default"].post("/ujian/ujian-siswa-det", payload).then(function (response) {
         commit('ASSIGN_DATA_UJIAN', response.data);
@@ -67006,8 +67175,8 @@ var actions = {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! D:\data_center\server4\vlam\resources\js\app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! D:\data_center\server4\vlam\resources\sass\app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! D:\data.center.laravel\vlam\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! D:\data.center.laravel\vlam\resources\sass\app.scss */"./resources/sass/app.scss");
 
 
 /***/ })

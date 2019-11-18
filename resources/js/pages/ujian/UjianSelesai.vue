@@ -21,6 +21,9 @@
 </template>
 <script>
 export default {
+	created() {
+		clearInterval()
+	},
 	methods: {
       logout() { 
         return new Promise((resolve, reject) => {
