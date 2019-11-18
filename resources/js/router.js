@@ -4,15 +4,6 @@ import Home from './pages/Home.vue'
 import Login from './pages/Login.vue'
 import store from './store.js'
 
-// import Setting from './pages/referensi/Setting.vue'
-
-// import IndexPegawai from './pages/pegawai/Index.vue'
-// import DataPegawai from './pages/pegawai/Pegawai.vue'
-
-// import IndexBanksoal from './pages/banksoal/Index.vue'
-// import DataBanksoal from './pages/banksoal/Banksoal.vue'
-// import SoalBanksoal from './pages/banksoal/SoalBanksoal.vue'
-
 import LoginUjian from './pages/ujian/LoginUjian.vue'
 import IndexUjian from './pages/ujian/Index.vue'
 import UjianKonfirm from './pages/ujian/UjianKonfirm.vue'
@@ -58,57 +49,6 @@ const router = new Router({
 				}
 			]
 		}
-
-		// section nanti fokus ke peserta dulu
-		// {
-		// 	path: '/',
-		// 	name: 'home',
-		// 	component: Home,
-		// 	meta: { requiresAuth: true }
-		// },
-		// {
-		// 	path: '/login',
-		// 	name: 'login',
-		// 	component: Login
-		// },
-		// {
-		// 	path: '/Setting',
-		// 	name: 'setting',
-		// 	component: Setting,
-		// 	meta: { requiresAuth: true, title: 'Setting'}
-		// },
-		// {
-		// 	path: '/pegawai',
-		// 	component: IndexPegawai,
-		// 	meta: { requiresAuth: true },
-		// 	children: [
-		// 		{
-		// 			path: '',
-		// 			name: 'pegawai.data',
-		// 			component: DataPegawai,
-		// 			meta: { title: 'Manage Pegawai'}
-		// 		}
-		// 	]
-		// },
-		// {
-		// 	path: '/banksoal',
-		// 	component: IndexBanksoal,
-		// 	meta: { requiresAuth: true },
-		// 	children: [ 
-		// 		{
-		// 			path: '',
-		// 			name: 'banksoal.data',
-		// 			component: DataBanksoal,
-		// 			meta: { title: 'Manage banksoal' }
-		// 		},
-		// 		{
-		// 			path: 'soal/:id',
-		// 			name: 'banksoals.soal',
-		// 			component: SoalBanksoal,
-		// 			meta: { title: 'Manage soal' }
-		// 		}
-		// 	]
-		// }
 	]
 })
 
