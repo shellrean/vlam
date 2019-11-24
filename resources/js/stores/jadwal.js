@@ -1,7 +1,7 @@
 import $axios from '../api.js'
 
 const state = () => ({
-	banksoalHariIni: []
+	banksoalHariIni: [],
 })
 
 const mutations = {

@@ -7,26 +7,35 @@
 		    	<b-button variant="outline-dark" class="float-right" size="sm" squared disabled>Sisa waktu:&nbsp; {{ prettyTime }}</b-button>
 			</div>
 			<div class="card-body fade-in" v-if="filleds">
-		    	<p v-html="filleds[questionIndex].soal.pertanyaan"></p>
-		    	<b-form-group>
+		    	<!-- <p v-html="filleds[questionIndex].soal.pertanyaan"></p> -->
+		    	<!-- <b-form-group>
 		    		<b-form-radio v-for="(jawab,index) in filleds[questionIndex].soal.jawabans" :key="index" v-model="selected" name="jwb" :value="jawab.id" @change="selectOption(index)">
 		    			<span class="text-uppercase">{{ index | charIndex }}</span>. <span v-html="jawab.text_jawaban"></span>
 		    		</b-form-radio>
-		    	</b-form-group>
+		    	</b-form-group> -->
+		    	<table class="table table-borderless table-sm">
+		    		<tr>
+		    			<td colspan="2" v-html="filleds[questionIndex].soal.pertanyaan"></td>
+		    		</tr>
+		    		<tr v-for="(jawab,index) in filleds[questionIndex].soal.jawabans" :key="index">
+		    			<td width="50px"><b-form-radio v-model="selected" name="jwb" :value="jawab.id" @change="selectOption(index)"><span class="text-uppercase">{{ index | charIndex }}</span>.</b-form-radio></td>
+		    			<td v-html="jawab.text_jawaban"></td>
+		    		</tr>
+		    	</table>
 		    </div>
 		    <div class="card-footer" v-if="filleds">
-		    	<b-button variant="secondary" size="md" squared @click="prev()" v-if="questionIndex != 0"><i class="cui-chevron-left"></i> &nbsp; Sebelumnya</b-button>
+		    	<b-button variant="secondary" size="md" squared @click="prev()" v-if="questionIndex != 0"><font-awesome-icon icon="angle-left" /> &nbsp; Sebelumnya</b-button>
 
   				<b-button variant="warning" squared style="position: absolute; left: 41%">
   					<b-form-checkbox size="lg" value="1" v-model="ragu">Ragu ragu</b-form-checkbox>
   				</b-button>
 
-		    	<b-button variant="success" class="float-right" size="md" squared @click="next()" v-if="questionIndex+1 != filleds.length">Selanjutnya &nbsp; <i class="cui-chevron-right"></i></b-button>
-		    	<b-button variant="success" class="float-right" size="md" squared @click="$bvModal.show('modal-selesai')" v-if="questionIndex+1 == filleds.length && checkRagu() == false">Selesai &nbsp; <i class="cui-check"></i></b-button>
-		    	<b-button variant="danger" class="float-right" size="md" squared v-b-modal.modal-1 v-if="questionIndex+1 == filleds.length && checkRagu() == true">Selesai &nbsp; <i class="cui-check"></i></b-button>
+		    	<b-button variant="success" class="float-right" size="md" squared @click="next()" v-if="questionIndex+1 != filleds.length">Selanjutnya &nbsp; <font-awesome-icon icon="angle-right" /></b-button>
+		    	<b-button variant="success" class="float-right" size="md" squared @click="$bvModal.show('modal-selesai')" v-if="questionIndex+1 == filleds.length && checkRagu() == false">Selesai &nbsp; <font-awesome-icon icon="check" /></b-button>
+		    	<b-button variant="danger" class="float-right" size="md" squared v-b-modal.modal-1 v-if="questionIndex+1 == filleds.length && checkRagu() == true">Selesai &nbsp; <font-awesome-icon icon="check" /></b-button>
 		    	
 				<b-modal id="modal-1" title="Peringatan" ok-only v-if="checkRagu()">
-				  <p class="my-4"><i class="cui-warning"></i> &nbsp; Masih ada jawaban ragu ragu. </p>
+				  <p class="my-4"><font-awesome-icon icon="exclamation-triangle" /> &nbsp; Masih ada jawaban ragu ragu. </p>
 				</b-modal>
 
 
@@ -63,8 +72,8 @@
 			</div>
 		</div>
 		<button class="coss btn btn-info rounded-0" @click="toggle"> 
-			<i class="cui-chevron-left" v-show="!sidebar"></i>
-			<i class="cui-chevron-right" v-show="sidebar"></i>
+			<font-awesome-icon icon="angle-left" v-show="!sidebar" />
+			<font-awesome-icon icon="angle-right" v-show="sidebar" />
 		</button>
 	</div>
 </template>

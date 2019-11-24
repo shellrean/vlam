@@ -9,7 +9,7 @@ import Notifications from 'vue-notification'
 import BootstrapVue from 'bootstrap-vue'
 import VueSweetalert2 from 'vue-sweetalert2'
 
-
+import Awesome from './awesome.js'
 
 Vue.config.performance = true
 Vue.use(CoreuiVue)

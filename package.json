@@ -21,7 +21,11 @@
     },
     "dependencies": {
         "@coreui/coreui": "3.0.0-beta.0",
+        "@fortawesome/fontawesome-svg-core": "^1.2.25",
+        "@fortawesome/free-solid-svg-icons": "^5.11.2",
+        "@fortawesome/vue-fontawesome": "^0.1.8",
         "bootstrap-vue": "^2.1.0",
+        "jquery": "^3.4.1",
         "perfect-scrollbar": "^1.4.0",
         "popper.js": "^1.16.0",
         "sweetalert2": "^9.3.11",

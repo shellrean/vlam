@@ -34,7 +34,7 @@
 					    <div class="col-sm-9">
 					      <div class="input-group mb-2 mr-sm-2">
 						    <div class="input-group-prepend">
-						      <div class="input-group-text rounded-0"><i class="cui-user"></i></div>
+						      <div class="input-group-text rounded-0"><font-awesome-icon icon="user" /></div>
 						    </div>
 						    <input type="text" class="form-control rounded-0" :class="{ 'is-invalid' : errors.no_ujian }" v-model="data.no_ujian" placeholder="No peserta" required @keyup="clearError">
 						    <div class="invalid-feedback" v-if="errors.no_ujian">{{ errors.no_ujian[0] }}</div>
@@ -46,7 +46,7 @@
 					    <div class="col-sm-9">
 					      <div class="input-group mb-2 mr-sm-2">
 						    <div class="input-group-prepend">
-						      <div class="input-group-text rounded-0"><i class="cui-lock-locked"></i></div>
+						      <div class="input-group-text rounded-0"><font-awesome-icon icon="lock" /></div>
 						    </div>
 						    <input type="password" class="form-control rounded-0" :class="{ 'is-invalid' : errors.password }"placeholder="Password" v-model="data.password" required @keyup="clearError">
 						    <div class="invalid-feedback" v-if="errors.password">{{ errors.password[0] }} </div>

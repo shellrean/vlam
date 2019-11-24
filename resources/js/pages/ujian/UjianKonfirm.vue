@@ -21,7 +21,7 @@
 		          		<td>Token</td>
 		          		<td v-if="jadwal.token">
 		          			<div class="input-group mb-3">
-							  <input type="text" class="form-control rounded-0" placeholder="Masukkan token" v-model="token_ujian" @keyup="resInv">
+							  <input type="text" class="form-control rounded-0" placeholder="Masukkan token" v-model="token_ujian">
 							  <div class="input-group-append">
 							    <button class="btn btn-outline-primary rounded-0" type="button" @click="cekToken">Submit</button>
 							  </div>
@@ -60,30 +60,35 @@
 	    data() {
 	      return {
 	        token_ujian : '',
-	        invalidToken: false
+	        timeout: 0
 	      } 
 	    },
 	    computed: {
 	    	...mapState('jadwal', {
-	    		jadwal: state => state.banksoalHariIni
+	    		jadwal: state => state.banksoalHariIni,
 	    	}),
 	    	...mapState('user', {
 		        peserta: state => state.pesertaDetail
 		     }),
 	    	...mapState('ujian', {
-	    		ujian: state => state.dataUjian.data
+	    		ujian: state => state.dataUjian.data,
+	    		invalidToken: state => state.invalidToken
 	    	})
 	    },
 	    methods: {
 	      ...mapActions('jadwal',['ujianHariIni']),
-	      ...mapActions('ujian',['getPesertaDataUjian']),
+	      ...mapActions('ujian',['getPesertaDataUjian','tokenChecker']),
 	      cekToken(){
-	      	if (this.jadwal.token != this.token_ujian) {
-	      		this.invalidToken = true
-	      		return
-	      	}
-
-	      	this.$router.push({ name: 'ujian.prepare' })
+	      	this.tokenChecker({
+	      		id: this.jadwal.id,
+	      		token: this.token_ujian
+	      	})
+	      	.then(() => {
+	      		this.$router.push({ name: 'ujian.prepare' })
+	      	})
+	      	.catch(() => {
+	      		
+	      	})
 	      },
 	      dataUjianPeserta() {
 	      	this.getPesertaDataUjian({
@@ -91,14 +96,11 @@
 	      		peserta_id 	: this.peserta.id,
 	   			lama		: this.jadwal.lama
 	      	})
-	      },
-	      resInv() {
-	      	this.invalidToken = false
 	      }
 	    },
 	    watch: {
 	    	jadwal(val) {
-	    		if(val.banksoal_id) {
+	    		if(typeof(val) != 'undefined') {
 	    			this.dataUjianPeserta()
 	    		}
 	    	}

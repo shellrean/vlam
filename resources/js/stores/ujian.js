@@ -4,7 +4,8 @@ const state = () => ({
 	jawabanPeserta: [],
 	ujianList: [],
 	filledUjian: [],
-	dataUjian: ''
+	dataUjian: '',
+	invalidToken: false
 })
 
 const mutations = {
@@ -26,6 +27,9 @@ const mutations = {
 	},
 	ASSIGN_DATA_UJIAN(state, payload) {
 		state.dataUjian = payload
+	},
+	SET_INV_TOKEN(state, payload) {
+		state.invalidToken = payload
 	}
 }
 
@@ -111,6 +115,22 @@ const actions = {
 				commit('ASSIGN_DATA_UJIAN', response.data)
 				resolve(response.data)
 			})
+			.catch((error) => {
+
+			})
+		})
+	},
+	tokenChecker({ commit, state }, payload) {
+		return new Promise(( resolve, reject) => {
+			$axios.post(`/ujian/cektoken`, payload)
+			.then( (response) => {
+				if(response.data.status == 'success') {
+					resolve(response.data)
+				}
+				else {
+					commit('SET_INV_TOKEN', true)
+				}
+			}) 
 			.catch((error) => {
 
 			})

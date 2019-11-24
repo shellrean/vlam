@@ -28,22 +28,22 @@ Route::group(['middleare' => 'peserta'], function() {
 	Route::post('/ujian/ujian-siswa-det', 'API\UjianController@detUjian');
 	Route::post('/ujian/ragu-ragu', 'API\UjianController@setRagu');
 	Route::post('/ujian/selesai', 'API\UjianController@selesai');
-
+	Route::post('/ujian/cektoken','API\UjianController@cekToken');
 });
 
-Route::group(['middleware' => 'auth:api'], function() {
-	Route::get('/settings', 'API\ReferenceController@setting');
-	Route::post('/settings', 'API\ReferenceController@storeSetting');
+// Route::group(['middleware' => 'auth:api'], function() {
+// 	Route::get('/settings', 'API\ReferenceController@setting');
+// 	Route::post('/settings', 'API\ReferenceController@storeSetting');
 
-	Route::resource('/banksoals', 'API\BanksoalController');
-	Route::get('/banksoals/{id}', 'API\SoalController@showByBanksoal');
+// 	Route::resource('/banksoals', 'API\BanksoalController');
+// 	Route::get('/banksoals/{id}', 'API\SoalController@showByBanksoal');
 
 	
-	Route::post('/ujian/daftar', 'API\UjianController@getListUjian');
+// 	Route::post('/ujian/daftar', 'API\UjianController@getListUjian');
 
-	Route::resource('/matpel', 'API\MatpelController');
+// 	Route::resource('/matpel', 'API\MatpelController');
 
-	Route::resource('/kelas', 'API\KelasController');
+// 	Route::resource('/kelas', 'API\KelasController');
 
-	Route::resource('/jadwal', 'API\JadwalController');
-});
+// 	Route::resource('/jadwal', 'API\JadwalController');
+// });

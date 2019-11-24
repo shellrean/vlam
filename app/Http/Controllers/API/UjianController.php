@@ -10,9 +10,16 @@ use App\Banksoal;
 use App\JawabanPeserta;
 use App\Jadwal;
 use App\SiswaUjian;
+use App\HasilUjian;
 
 class UjianController extends Controller
 {
+    /**
+     * Get soal by id
+     *
+     * @param int $id
+     * @return \Illuminate\Http\Response
+     */
     public function getsoal($id)
     {
     	$all = Banksoal::with(['pertanyaans','pertanyaans.jawabans'])->where('id',$id)->first();
@@ -20,6 +27,12 @@ class UjianController extends Controller
     	return response()->json(['data' => $all]);
     }
 
+    /**
+     * Store data ujian to table
+     *
+     * @param Illuminate\Http\Request
+     * @return Illuminate\Http\Response
+     */
     public function store(Request $request)
     {
 
@@ -35,6 +48,12 @@ class UjianController extends Controller
     	
     }
 
+    /** 
+     * Set ragu ragu in siswa
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
+     */
     public function setRagu(Request $request) 
     {
         $find = JawabanPeserta::where([
@@ -47,6 +66,12 @@ class UjianController extends Controller
         return response()->json(['data' => $find,'index' => $request->index]);
     }
 
+    /**
+     * Get jawaban peserta 
+     *
+     * @param int $id
+     * @return \Illuminate\Http\Response
+     */
     public function getJawabanPeserta($id)
     {
         $data = JawabanPeserta::where(['soal_id' => $id])->first();
@@ -82,6 +107,9 @@ class UjianController extends Controller
 
         if ($find->count() < 1 ) {
             $all = Banksoal::with(['pertanyaans','pertanyaans.jawabans'])->where('id',$id)->first();
+
+            $max_soal = $all->jumlah_soal;
+            $i = 1;
             $collection = new Collection($all->pertanyaans);
             $perta = $collection->shuffle();
             
@@ -95,6 +123,8 @@ class UjianController extends Controller
                     'jadwal_id'     => $jadwal_id,
                     'ragu_ragu'     => 0
                 ]);
+
+                if ($i++ == $max_soal) break;
             }
             
             $detail = SiswaUjian::where([
@@ -166,6 +196,41 @@ class UjianController extends Controller
         $ujian->status_ujian = 1;
         $ujian->save();
 
-        return response()->json(['finished']);
+        $salah = JawabanPeserta::where([
+            'iscorrect'     => 0,
+            'jadwal_id'     => $request->jadwal_id, 
+            'peserta_id'    => $request->peserta_id
+        ])->get();
+        $benar = JawabanPeserta::where([
+            'iscorrect'     => 1,
+            'jadwal_id'     => $request->jadwal_id, 
+            'peserta_id'    => $request->peserta_id
+        ])->get();
+        $jml = JawabanPeserta::where([
+            'jadwal_id'     => $request->jadwal_id, 
+            'peserta_id'    => $request->peserta_id
+        ])->get();
+
+        $hasil = (count($benar)/count($jml))*100;
+
+        HasilUjian::create([
+            'peserta_id'      => $request->peserta_id,
+            'jadwal_id'       => $request->jadwal_id,
+            'jumlah_salah'    => count($salah),
+            'jumlah_benar'    => count($benar),
+            'tidak_diisi'     => 0,
+            'hasil'           => $hasil,
+        ]);
+
+        return response()->json(['status' => 'finished']);
+    }
+
+    public function cekToken(Request $request)
+    {
+        $jadwal = Jadwal::find($request->id);
+        if($jadwal->token == $request->token) {
+            return response()->json(['status' =>'success']);
+        }
+        return response()->json(['status' => 'error']);
     }
 }
