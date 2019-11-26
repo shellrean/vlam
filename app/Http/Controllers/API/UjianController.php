@@ -11,6 +11,7 @@ use App\JawabanPeserta;
 use App\Jadwal;
 use App\SiswaUjian;
 use App\HasilUjian;
+use App\JawabanSoal;
 
 class UjianController extends Controller
 {
@@ -40,8 +41,10 @@ class UjianController extends Controller
             'id'            => $request->jawaban_id
         ])->first();
 
+        $kj = JawabanSoal::find($request->jawab);
+
         $find->jawab = $request->jawab;
-        $find->iscorrect = $request->correct;
+        $find->iscorrect = $kj->correct;
         $find->save();
 
     	return response()->json(['data' => $find,'index' => $request->index]);

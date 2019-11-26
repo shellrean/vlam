@@ -19,7 +19,7 @@ class CreateJawabanPesertasTable extends Migration
             $table->unsignedBigInteger('soal_id');
             $table->unsignedBigInteger('peserta_id');
             $table->unsignedBigInteger('jadwal_id');
-            $table->char('jawab',2);
+            $table->bigInteger('jawab');
             $table->char('ragu_ragu');
             $table->char('iscorrect');
 
