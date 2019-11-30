@@ -7,12 +7,6 @@
 		    	<b-button variant="outline-dark" class="float-right" size="sm" squared disabled>Sisa waktu:&nbsp; {{ prettyTime }}</b-button>
 			</div>
 			<div class="card-body fade-in" v-if="filleds">
-		    	<!-- <p v-html="filleds[questionIndex].soal.pertanyaan"></p> -->
-		    	<!-- <b-form-group>
-		    		<b-form-radio v-for="(jawab,index) in filleds[questionIndex].soal.jawabans" :key="index" v-model="selected" name="jwb" :value="jawab.id" @change="selectOption(index)">
-		    			<span class="text-uppercase">{{ index | charIndex }}</span>. <span v-html="jawab.text_jawaban"></span>
-		    		</b-form-radio>
-		    	</b-form-group> -->
 		    	<table class="table table-borderless table-sm">
 		    		<tr>
 		    			<td colspan="2" v-html="filleds[questionIndex].soal.pertanyaan"></td>
@@ -20,6 +14,11 @@
 		    		<tr v-for="(jawab,index) in filleds[questionIndex].soal.jawabans" :key="index">
 		    			<td width="50px"><b-form-radio v-model="selected" name="jwb" :value="jawab.id" @change="selectOption(index)"><span class="text-uppercase">{{ index | charIndex }}</span>.</b-form-radio></td>
 		    			<td v-html="jawab.text_jawaban"></td>
+		    		</tr>
+		    		<tr v-if="filleds[questionIndex].soal.tipe_soal == 2">
+		    			<td>
+		    				<textarea class="form-control" placeholder="Tulis jawaban disini..."></textarea>
+		    			</td>
 		    		</tr>
 		    	</table>
 		    </div>
@@ -37,8 +36,6 @@
 				<b-modal id="modal-1" title="Peringatan" ok-only v-if="checkRagu()">
 				  <p class="my-4"><font-awesome-icon icon="exclamation-triangle" /> &nbsp; Masih ada jawaban ragu ragu. </p>
 				</b-modal>
-
-
 		    </div>
 		</div>
 		<b-modal id="modal-selesai">
