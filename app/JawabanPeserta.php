@@ -10,6 +10,10 @@ class JawabanPeserta extends Model
     	'banksoal_id','soal_id','jawab','iscorrect','peserta_id','jadwal_id','ragu_ragu'
     ];
 
+    protected $hidden = [
+    	'iscorrect'
+    ];
+
     public function soal()
     {
     	return $this->belongsTo('App\Soal','soal_id');
