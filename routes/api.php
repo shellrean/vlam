@@ -16,9 +16,10 @@ use Illuminate\Http\Request;
 Route::post('/login', 'Auth\LoginController@login');
 Route::post('/logedin','Auth\PesertaLoginController@login');
 
-Route::group(['middleare' => 'peserta'], function() {
+Route::group(['middlewarde' => 'peserta'], function() {
 
 	Route::get('/jadwal/getday', 'API\JadwalController@getday');
+	Route::get('/jadwal/aktif', 'API\UjianController@getUjianAktif');
 
 	Route::get('/ujian/{id}','API\UjianController@getsoal');
 	Route::post('/ujian','API\UjianController@store');
@@ -29,21 +30,6 @@ Route::group(['middleare' => 'peserta'], function() {
 	Route::post('/ujian/ragu-ragu', 'API\UjianController@setRagu');
 	Route::post('/ujian/selesai', 'API\UjianController@selesai');
 	Route::post('/ujian/cektoken','API\UjianController@cekToken');
+
+	Route::post('/ujian/mulai-peserta', 'API\UjianController@mulaiPeserta');
 });
-
-// Route::group(['middleware' => 'auth:api'], function() {
-// 	Route::get('/settings', 'API\ReferenceController@setting');
-// 	Route::post('/settings', 'API\ReferenceController@storeSetting');
-
-// 	Route::resource('/banksoals', 'API\BanksoalController');
-// 	Route::get('/banksoals/{id}', 'API\SoalController@showByBanksoal');
-
-	
-// 	Route::post('/ujian/daftar', 'API\UjianController@getListUjian');
-
-// 	Route::resource('/matpel', 'API\MatpelController');
-
-// 	Route::resource('/kelas', 'API\KelasController');
-
-// 	Route::resource('/jadwal', 'API\JadwalController');
-// });

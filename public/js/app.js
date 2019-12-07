@@ -18870,11 +18870,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'KonfirmUjian',
   created: function created() {
-    this.ujianHariIni();
+    this.ujianAktif();
   },
   data: function data() {
     return {
@@ -18884,7 +18885,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   },
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])('jadwal', {
     jadwal: function jadwal(state) {
-      return state.banksoalHariIni;
+      return state.banksoalAktif.data;
     }
   }), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])('user', {
     peserta: function peserta(state) {
@@ -18898,12 +18899,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return state.invalidToken;
     }
   })),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('jadwal', ['ujianHariIni']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('ujian', ['getPesertaDataUjian', 'tokenChecker']), {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('jadwal', ['ujianAktif']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('ujian', ['getPesertaDataUjian', 'tokenChecker']), {
     cekToken: function cekToken() {
       var _this = this;
 
       this.tokenChecker({
-        id: this.jadwal.id,
         token: this.token_ujian
       }).then(function () {
         _this.$router.push({
@@ -18913,9 +18913,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     dataUjianPeserta: function dataUjianPeserta() {
       this.getPesertaDataUjian({
-        jadwal_id: this.jadwal.id,
+        jadwal_id: this.jadwal.jadwal.id,
         peserta_id: this.peserta.id,
-        lama: this.jadwal.lama
+        lama: this.jadwal.jadwal.lama
       });
     }
   }),
@@ -18995,7 +18995,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'PrepareUjian',
   created: function created() {
-    this.ujianHariIni();
+    this.ujianAktif();
     this.starTime();
   },
   data: function data() {
@@ -19008,19 +19008,26 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   },
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])('jadwal', {
     jadwal: function jadwal(state) {
-      return state.banksoalHariIni;
+      return state.banksoalAktif.data;
     },
     mulai: function mulai(state) {
-      return state.banksoalHariIni.mulai;
+      return state.banksoalAktif.data.jadwal.mulai;
+    }
+  }), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])('user', {
+    peserta: function peserta(state) {
+      return state.pesertaDetail;
     }
   })),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('jadwal', ['ujianHariIni']), {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('jadwal', ['ujianAktif']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('ujian', ['pesertaMulai']), {
     start: function start() {
+      this.pesertaMulai({
+        peserta_id: this.peserta.id
+      });
       this.$router.push({
         name: 'ujian.while',
         params: {
-          banksoal: this.jadwal.banksoal_id,
-          jadwal_id: this.jadwal.id
+          banksoal: this.jadwal.jadwal.banksoal_id,
+          jadwal_id: this.jadwal.jadwal.id
         }
       });
     },
@@ -19038,13 +19045,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var ye = date.getFullYear();
       var mo = date.getMonth();
       var da = date.getDate();
-      var mulai = this.jadwal.mulai;
+      var mulai = this.jadwal.jadwal.mulai;
       var splicer = mulai.split(":");
       var h = parseInt(splicer[0]);
       var i = parseInt(splicer[1]);
       var s = parseInt(splicer[2]);
       var rest = new Date(ye, mo, da, h, i, s);
-      var sec_num = parseInt(this.jadwal.lama, 10);
+      var sec_num = parseInt(this.jadwal.jadwal.lama, 10);
       var hours = Math.floor(sec_num / 3600);
       var minutes = Math.floor((sec_num - hours * 3600) / 60);
       this.starter = rest;
@@ -55025,7 +55032,7 @@ var render = function() {
                                   )
                                 ]),
                                 _vm._v(" "),
-                                _vm.invalidToken
+                                _vm.invalidToken.token
                                   ? _c(
                                       "small",
                                       { staticClass: "text-danger" },
@@ -55034,6 +55041,14 @@ var render = function() {
                                           "Token tidak sesuai dengan pusat"
                                         )
                                       ]
+                                    )
+                                  : _vm._e(),
+                                _vm._v(" "),
+                                _vm.invalidToken.release
+                                  ? _c(
+                                      "small",
+                                      { staticClass: "text-danger" },
+                                      [_vm._v("Status token belum dirilis")]
                                     )
                                   : _vm._e()
                               ])
@@ -55139,7 +55154,9 @@ var render = function() {
                       _c("td", [_vm._v("Ujian ditutup")]),
                       _vm._v(" "),
                       _c("td", {
-                        domProps: { textContent: _vm._s(_vm.jadwal.berakhir) }
+                        domProps: {
+                          textContent: _vm._s(_vm.jadwal.jadwal.berakhir)
+                        }
                       })
                     ])
                   ])
@@ -76625,13 +76642,17 @@ __webpack_require__.r(__webpack_exports__);
 
 var state = function state() {
   return {
-    banksoalHariIni: []
+    banksoalHariIni: [],
+    banksoalAktif: ''
   };
 };
 
 var mutations = {
   UJIAN_HARI_INI: function UJIAN_HARI_INI(state, payload) {
     state.banksoalHariIni = payload;
+  },
+  ASSIGN_UJIAN_AKTIF: function ASSIGN_UJIAN_AKTIF(state, payload) {
+    state.banksoalAktif = payload;
   }
 };
 var actions = {
@@ -76640,6 +76661,16 @@ var actions = {
     return new Promise(function (resolve, reject) {
       _api_js__WEBPACK_IMPORTED_MODULE_0__["default"].get("/jadwal/getday").then(function (response) {
         commit('UJIAN_HARI_INI', response.data.data);
+        resolve(response.data);
+      });
+    });
+  },
+  ujianAktif: function ujianAktif(_ref2, payload) {
+    var commit = _ref2.commit,
+        state = _ref2.state;
+    return new Promise(function (resolve, reject) {
+      _api_js__WEBPACK_IMPORTED_MODULE_0__["default"].get("/jadwal/aktif", payload).then(function (response) {
+        commit('ASSIGN_UJIAN_AKTIF', response.data);
         resolve(response.data);
       });
     });
@@ -76826,7 +76857,11 @@ var state = function state() {
     ujianList: [],
     filledUjian: [],
     dataUjian: '',
-    invalidToken: false
+    invalidToken: {
+      release: false,
+      token: false
+    },
+    banksoalAktif: ''
   };
 };
 
@@ -76850,8 +76885,13 @@ var mutations = {
   ASSIGN_DATA_UJIAN: function ASSIGN_DATA_UJIAN(state, payload) {
     state.dataUjian = payload;
   },
-  SET_INV_TOKEN: function SET_INV_TOKEN(state, payload) {
-    state.invalidToken = payload;
+  SET_INV_TOKEN_RELEASE: function SET_INV_TOKEN_RELEASE(state, payload) {
+    state.invalidToken.release = payload;
+    state.invalidToken.token = false;
+  },
+  SET_INV_TOKEN_INV: function SET_INV_TOKEN_INV(state, payload) {
+    state.invalidToken.token = payload;
+    state.invalidToken.release = false;
   }
 };
 var actions = {
@@ -76939,10 +76979,21 @@ var actions = {
       _api_js__WEBPACK_IMPORTED_MODULE_0__["default"].post("/ujian/cektoken", payload).then(function (response) {
         if (response.data.status == 'success') {
           resolve(response.data);
+        } else if (response.data.status == 'invalid') {
+          commit('SET_INV_TOKEN_RELEASE', true);
         } else {
-          commit('SET_INV_TOKEN', true);
+          commit('SET_INV_TOKEN_INV', true);
         }
       })["catch"](function (error) {});
+    });
+  },
+  pesertaMulai: function pesertaMulai(_ref10, payload) {
+    var commit = _ref10.commit,
+        state = _ref10.state;
+    return new Promise(function (resolve, reject) {
+      _api_js__WEBPACK_IMPORTED_MODULE_0__["default"].post("/ujian/mulai-peserta", payload).then(function (response) {
+        resolve(response.data);
+      });
     });
   }
 };

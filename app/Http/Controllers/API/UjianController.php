@@ -12,6 +12,9 @@ use App\Jadwal;
 use App\SiswaUjian;
 use App\HasilUjian;
 use App\JawabanSoal;
+use App\UjianAktif;
+
+use DB;
 
 class UjianController extends Controller
 {
@@ -176,7 +179,7 @@ class UjianController extends Controller
             $data = [
                 'jadwal_id'     => $request->jadwal_id,
                 'peserta_id'    => $request->peserta_id,
-                'mulai_ujian'   => now()->format('H:i:s'),
+                'mulai_ujian'   => '',
                 'sisa_waktu'    => $request->lama,
                 'status_ujian'  => 0
             ];
@@ -230,10 +233,30 @@ class UjianController extends Controller
 
     public function cekToken(Request $request)
     {
-        $jadwal = Jadwal::find($request->id);
+        $jadwal = UjianAktif::first();
         if($jadwal->token == $request->token) {
+            if($jadwal->status_token != 1) {
+                return response()->json(['status' => 'invalid']);
+            }
             return response()->json(['status' =>'success']);
         }
         return response()->json(['status' => 'error']);
+    }
+
+    public function getUjianAktif()
+    {
+        $jadwal = UjianAktif::with(['jadwal','jadwal.banksoal','jadwal.banksoal.matpel'])->first();
+
+        return response()->json(['data' => $jadwal]);
+    }
+
+    public function mulaiPeserta(Request $request)
+    {
+        $peserta = SiswaUjian::where(['peserta_id' => $request->peserta_id])->first();
+        $peserta->mulai_ujian = now()->format('H:i:s');
+        $peserta->status_ujian = 3;
+        $peserta->save();
+
+        return response()->json(['status' => 'save']);
     }
 }

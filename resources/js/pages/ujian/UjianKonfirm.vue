@@ -26,7 +26,8 @@
 							    <button class="btn btn-outline-primary rounded-0" type="button" @click="cekToken">Submit</button>
 							  </div>
 							</div>
-							<small class="text-danger" v-if="invalidToken">Token tidak sesuai dengan pusat</small>
+							<small class="text-danger" v-if="invalidToken.token">Token tidak sesuai dengan pusat</small>
+							<small class="text-danger" v-if="invalidToken.release">Status token belum dirilis</small>
 						</td>
 		          	</tr>
 		          </table>
@@ -55,7 +56,7 @@
 	export default {
 		name: 'KonfirmUjian',
 		created() {
-			this.ujianHariIni()
+			this.ujianAktif()
 		},
 	    data() {
 	      return {
@@ -65,7 +66,7 @@
 	    },
 	    computed: {
 	    	...mapState('jadwal', {
-	    		jadwal: state => state.banksoalHariIni,
+	    		jadwal: state => state.banksoalAktif.data
 	    	}),
 	    	...mapState('user', {
 		        peserta: state => state.pesertaDetail
@@ -76,11 +77,10 @@
 	    	})
 	    },
 	    methods: {
-	      ...mapActions('jadwal',['ujianHariIni']),
+	      ...mapActions('jadwal',['ujianAktif']),
 	      ...mapActions('ujian',['getPesertaDataUjian','tokenChecker']),
 	      cekToken(){
 	      	this.tokenChecker({
-	      		id: this.jadwal.id,
 	      		token: this.token_ujian
 	      	})
 	      	.then(() => {
@@ -92,9 +92,9 @@
 	      },
 	      dataUjianPeserta() {
 	      	this.getPesertaDataUjian({
-	      		jadwal_id 	:this.jadwal.id,
+	      		jadwal_id 	:this.jadwal.jadwal.id,
 	      		peserta_id 	: this.peserta.id,
-	   			lama		: this.jadwal.lama
+	   			lama		: this.jadwal.jadwal.lama
 	      	})
 	      }
 	    },

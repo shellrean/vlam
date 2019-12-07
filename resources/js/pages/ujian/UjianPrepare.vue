@@ -19,7 +19,7 @@
 		          	</tr>	
 		          	<tr>
 		          		<td>Ujian ditutup</td>
-		          		<td v-text="jadwal.berakhir"></td>
+		          		<td v-text="jadwal.jadwal.berakhir"></td>
 		          	</tr>
 		          </table>
 		        </div> 
@@ -48,7 +48,7 @@ import { mapActions, mapState } from 'vuex'
 export default {
 	name: 'PrepareUjian',
 	created() {
-		this.ujianHariIni()
+		this.ujianAktif()
 		this.starTime()
 	},
 	data() {
@@ -61,18 +61,25 @@ export default {
 	},
 	computed: {
 		...mapState('jadwal', {
-			jadwal: state => state.banksoalHariIni,
-			mulai: state => state.banksoalHariIni.mulai
-		})
+			jadwal: state => state.banksoalAktif.data,
+			mulai: state => state.banksoalAktif.data.jadwal.mulai
+		}),
+		...mapState('user', {
+		    peserta: state => state.pesertaDetail
+		}),
 	},
 	methods: {
-	    ...mapActions('jadwal',['ujianHariIni']),
+	    ...mapActions('jadwal',['ujianAktif']),
+	    ...mapActions('ujian',['pesertaMulai']),
 	    start() {
+	    	this.pesertaMulai({
+	    		peserta_id: this.peserta.id
+	    	})
 	    	this.$router.push({ 
 	    		name: 'ujian.while', 
 	    		params: { 
-	    			banksoal: this.jadwal.banksoal_id, 
-	    			jadwal_id: this.jadwal.id 
+	    			banksoal: this.jadwal.jadwal.banksoal_id, 
+	    			jadwal_id: this.jadwal.jadwal.id 
 	    		} 
 	    	})
 	    },
@@ -89,7 +96,7 @@ export default {
 			const mo = date.getMonth()
 			const da = date.getDate()
 
-			const mulai = this.jadwal.mulai
+			const mulai = this.jadwal.jadwal.mulai
         	const splicer = mulai.split(":");
 
         	const h = parseInt(splicer[0])
@@ -98,7 +105,7 @@ export default {
 
 			const rest = new Date(ye,mo,da,h,i,s)
 
-			let sec_num = parseInt(this.jadwal.lama, 10)
+			let sec_num = parseInt(this.jadwal.jadwal.lama, 10)
     		let hours   = Math.floor(sec_num / 3600)
     		let minutes = Math.floor((sec_num - (hours * 3600)) / 60)
 

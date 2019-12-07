@@ -5,7 +5,11 @@ const state = () => ({
 	ujianList: [],
 	filledUjian: [],
 	dataUjian: '',
-	invalidToken: false
+	invalidToken: {
+		release: false,
+		token: false
+	},
+	banksoalAktif: ''
 })
 
 const mutations = {
@@ -28,9 +32,15 @@ const mutations = {
 	ASSIGN_DATA_UJIAN(state, payload) {
 		state.dataUjian = payload
 	},
-	SET_INV_TOKEN(state, payload) {
-		state.invalidToken = payload
-	}
+	SET_INV_TOKEN_RELEASE(state, payload) {
+		state.invalidToken.release = payload
+		state.invalidToken.token = false
+	},
+	SET_INV_TOKEN_INV(state, payload) {
+		state.invalidToken.token = payload
+		state.invalidToken.release = false
+	},
+	
 }
 
 const actions = {
@@ -127,12 +137,23 @@ const actions = {
 				if(response.data.status == 'success') {
 					resolve(response.data)
 				}
+				else if(response.data.status  == 'invalid') {
+					commit('SET_INV_TOKEN_RELEASE', true)
+				}
 				else {
-					commit('SET_INV_TOKEN', true)
+					commit('SET_INV_TOKEN_INV',true)
 				}
 			}) 
 			.catch((error) => {
 
+			})
+		})
+	},
+	pesertaMulai({ commit, state }, payload) {
+		return new Promise(( resolve, reject) => {
+			$axios.post(`/ujian/mulai-peserta`, payload) 
+			.then((response) => {
+				resolve(response.data)
 			})
 		})
 	}
