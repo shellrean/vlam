@@ -8,6 +8,11 @@
 			</div>
 			<div class="card-body fade-in" v-if="filleds">
 		    	<table class="table table-borderless table-sm">
+		    		<tr v-if="audio != ''">
+		    			<td colspan="2">
+		    				<audio-player :file="'http://192.168.1.200/storage/audio/'+audio"></audio-player>
+		    			</td>
+		    		</tr>
 		    		<tr>
 		    			<td colspan="2" v-html="filleds[questionIndex].soal.pertanyaan"></td>
 		    		</tr>
@@ -76,11 +81,15 @@
 </template>
 <script>
 import { mapActions, mapState } from 'vuex'
+import AudioPlayer from '../../components/AudioPlayer.vue'
 export default {
 	name: 'DataUjian',
 	created() {
 		this.getAllSoal()
 		this.start()
+	},
+	components: {
+		AudioPlayer
 	},
 	data() {
 		return {
@@ -91,7 +100,8 @@ export default {
 			ragu: '',
 			time: 0,
 			isKonfirm : false,
-			interval: ''
+			interval: '',
+			audio: ''
 		}
 	},
 	filters: {
@@ -216,10 +226,22 @@ export default {
 			this.selected = this.filleds[this.questionIndex
 			].jawab
 			this.ragu = this.filleds[this.questionIndex].ragu_ragu
+			if(this.filleds[this.questionIndex].soal.audio != null) {
+				this.audio = this.filleds[this.questionIndex].soal.audio
+			} 
+			else {
+				this.audio = ''
+			}
 		},
 		filleds() {
 			this.selected = this.filleds[this.questionIndex].jawab
 			this.ragu = this.filleds[this.questionIndex].ragu_ragu
+			if(this.filleds[this.questionIndex].soal.audio != null) {
+				this.audio = this.filleds[this.questionIndex].soal.audio
+			} 
+			else {
+				this.audio = ''
+			}
 		},
 		detail(val) {
 			this.time = val.sisa_waktu
