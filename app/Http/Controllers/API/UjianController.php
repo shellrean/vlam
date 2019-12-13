@@ -15,6 +15,7 @@ use App\JawabanSoal;
 use App\UjianAktif;
 
 use DB;
+use Illuminate\Support\Str;
 
 class UjianController extends Controller
 {
@@ -46,6 +47,12 @@ class UjianController extends Controller
 
         $kj = JawabanSoal::find($request->jawab);
 
+        if($request->essy) {
+            $find->jawab_essy = $request->essy;
+            $find->save();
+
+            return response()->json(['data' => $find,'index' => $request->index]);
+        }
         $find->jawab = $request->jawab;
         $find->iscorrect = $kj->correct;
         $find->save();
@@ -234,6 +241,17 @@ class UjianController extends Controller
     public function cekToken(Request $request)
     {
         $jadwal = UjianAktif::first();
+        if($jadwal) {
+            $to = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', now());
+            $from = $jadwal['updated_at']->format('Y-m-d H:i:s');
+            $differ = $to->diffInSeconds($from);
+
+            if($differ > 900) {
+                $jadwal->token = strtoupper(Str::random(6));
+                $jadwal->status_token = 0;
+                $jadwal->save();
+            }  
+        }
         if($jadwal->token == $request->token) {
             if($jadwal->status_token != 1) {
                 return response()->json(['status' => 'invalid']);

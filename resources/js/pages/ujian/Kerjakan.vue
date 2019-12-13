@@ -22,7 +22,7 @@
 		    		</tr>
 		    		<tr v-if="filleds[questionIndex].soal.tipe_soal == 2">
 		    			<td>
-		    				<textarea class="form-control" placeholder="Tulis jawaban disini..."></textarea>
+		    				<textarea class="form-control" placeholder="Tulis jawaban disini..." v-model="filleds[questionIndex].jawab_essy" @keyup="inputJawabEssy" style="height: 150px"></textarea>
 		    			</td>
 		    		</tr>
 		    	</table>
@@ -129,7 +129,7 @@ export default {
 	},
 	methods: {
 		...mapActions('banksoal', ['getUjian']),
-		...mapActions('ujian', ['submitJawaban','takeFilled','updateWaktuSiswa','updateRaguJawaban','selesaiUjianPeserta']),
+		...mapActions('ujian', ['submitJawaban','submitJawabanEssy','takeFilled','updateWaktuSiswa','updateRaguJawaban','selesaiUjianPeserta']),
 		getAllSoal() {
 			this.getUjian(this.$route.params.banksoal)
 			.then((resp) => {
@@ -216,6 +216,15 @@ export default {
 				return true
 			}
 			return false
+		},
+		inputJawabEssy(val) {
+			const fill = this.filleds[this.questionIndex]
+
+	        this.submitJawabanEssy({ 
+	        	jawaban_id : this.filleds[this.questionIndex].id,
+	        	index : this.questionIndex,
+	        	essy: fill.jawab_essy
+	        })
 		}
 	},
 	watch: {

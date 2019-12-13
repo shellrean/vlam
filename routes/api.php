@@ -17,6 +17,7 @@ Route::post('/login', 'Auth\LoginController@login');
 Route::post('/logedin','Auth\PesertaLoginController@login');
 
 Route::group(['middlewarde' => 'peserta'], function() {
+	Route::post('/logout','Auth\PesertaLoginController@logout');
 
 	Route::get('/jadwal/getday', 'API\JadwalController@getday');
 	Route::get('/jadwal/aktif', 'API\UjianController@getUjianAktif');

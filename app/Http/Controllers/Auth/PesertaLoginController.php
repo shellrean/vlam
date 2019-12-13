@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 use App\Peserta;
+use App\UjianAktif;
 use Illuminate\Support\Facades\Validator;
 
 class PesertaLoginController extends Controller
@@ -26,10 +27,14 @@ class PesertaLoginController extends Controller
 
 
         $peserta = Peserta::where(['no_ujian' => $request->no_ujian,'password' => $request->password])->first();
+        $aktif = UjianAktif::first();
 
         if($peserta) {
             if($peserta->api_token != '') {
                 return response()->json(['status' => 'loggedin']);
+            }
+            if($aktif->kelompok != $peserta->sesi) {
+                return response()->json(['status' => 'non-sesi']);
             }
             $peserta->update(['api_token' => Str::random(80)]);
             return response()->json(['status' => 'success', 'data' => $peserta],200);

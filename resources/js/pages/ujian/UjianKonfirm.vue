@@ -17,7 +17,7 @@
 		          		<td>Mata pelajaran</td>
 		          		<td v-text="jadwal.banksoal.matpel.nama"></td>
 		          	</tr>
-		          	<tr v-if="ujian.status_ujian == 0">
+		          	<tr v-if="ujian.status_ujian != 1">
 		          		<td>Token</td>
 		          		<td v-if="jadwal.token">
 		          			<div class="input-group mb-3">

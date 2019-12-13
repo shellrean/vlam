@@ -18355,15 +18355,20 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return state.pesertaDetail;
     }
   })),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('user', ['setPesertaDetail']), {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('user', ['setPesertaDetail']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('auth', ['logoutPeserta']), {
     logout: function logout() {
       var _this = this;
 
       return new Promise(function (resolve, reject) {
-        localStorage.removeItem('token');
-        localStorage.removeItem('no_ujian');
-        localStorage.removeItem('nama');
-        localStorage.removeItem('id');
+        _this.logoutPeserta({
+          no_ujian: localStorage.getItem('no_ujian')
+        }).then(function () {
+          localStorage.removeItem('token');
+          localStorage.removeItem('no_ujian');
+          localStorage.removeItem('nama');
+          localStorage.removeItem('id');
+        });
+
         resolve();
       }).then(function () {
         _this.$store.state.token = localStorage.getItem('token');
@@ -18530,7 +18535,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return hours + ':' + minutes + ':' + seconds;
     }
   }),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('banksoal', ['getUjian']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('ujian', ['submitJawaban', 'takeFilled', 'updateWaktuSiswa', 'updateRaguJawaban', 'selesaiUjianPeserta']), {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('banksoal', ['getUjian']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('ujian', ['submitJawaban', 'submitJawabanEssy', 'takeFilled', 'updateWaktuSiswa', 'updateRaguJawaban', 'selesaiUjianPeserta']), {
     getAllSoal: function getAllSoal() {
       this.getUjian(this.$route.params.banksoal).then(function (resp) {});
     },
@@ -18609,6 +18614,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }
 
       return false;
+    },
+    inputJawabEssy: function inputJawabEssy(val) {
+      var fill = this.filleds[this.questionIndex];
+      this.submitJawabanEssy({
+        jawaban_id: this.filleds[this.questionIndex].id,
+        index: this.questionIndex,
+        essy: fill.jawab_essy
+      });
     }
   }),
   watch: {
@@ -54258,7 +54271,40 @@ var render = function() {
                   }),
                   _vm._v(" "),
                   _vm.filleds[_vm.questionIndex].soal.tipe_soal == 2
-                    ? _c("tr", [_vm._m(0)])
+                    ? _c("tr", [
+                        _c("td", [
+                          _c("textarea", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value:
+                                  _vm.filleds[_vm.questionIndex].jawab_essy,
+                                expression: "filleds[questionIndex].jawab_essy"
+                              }
+                            ],
+                            staticClass: "form-control",
+                            staticStyle: { height: "150px" },
+                            attrs: { placeholder: "Tulis jawaban disini..." },
+                            domProps: {
+                              value: _vm.filleds[_vm.questionIndex].jawab_essy
+                            },
+                            on: {
+                              keyup: _vm.inputJawabEssy,
+                              input: function($event) {
+                                if ($event.target.composing) {
+                                  return
+                                }
+                                _vm.$set(
+                                  _vm.filleds[_vm.questionIndex],
+                                  "jawab_essy",
+                                  $event.target.value
+                                )
+                              }
+                            }
+                          })
+                        ])
+                      ])
                     : _vm._e()
                 ],
                 2
@@ -54570,19 +54616,7 @@ var render = function() {
     1
   )
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("td", [
-      _c("textarea", {
-        staticClass: "form-control",
-        attrs: { placeholder: "Tulis jawaban disini..." }
-      })
-    ])
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 
 
@@ -54982,7 +55016,7 @@ var render = function() {
                         ])
                       : _vm._e(),
                     _vm._v(" "),
-                    _vm.ujian.status_ujian == 0
+                    _vm.ujian.status_ujian != 1
                       ? _c("tr", [
                           _c("td", [_vm._v("Token")]),
                           _vm._v(" "),
@@ -76517,6 +76551,15 @@ var actions = {
           commit('SET_LOADING', false, {
             root: true
           });
+        } else if (response.data.status == 'non-sesi') {
+          commit('SET_ERRORS', {
+            invalid: 'Ujian tidak sesuai sesi'
+          }, {
+            root: true
+          });
+          commit('SET_LOADING', false, {
+            root: true
+          });
         } else {
           commit('SET_ERRORS', {
             invalid: 'No ujian/Password salah'
@@ -76538,6 +76581,14 @@ var actions = {
             root: true
           });
         }
+      });
+    });
+  },
+  logoutPeserta: function logoutPeserta(_ref2, payload) {
+    var commit = _ref2.commit;
+    return new Promise(function (resolve, reject) {
+      _api_js__WEBPACK_IMPORTED_MODULE_0__["default"].post('/logout', payload).then(function (response) {
+        resolve(response.data);
       });
     });
   }
@@ -76878,6 +76929,7 @@ var mutations = {
   SLICE_DATA_RESP: function SLICE_DATA_RESP(state, payload) {
     state.filledUjian.data[payload.index].jawab = payload.data.jawab;
     state.filledUjian.data[payload.index].iscorrect = payload.data.iscorrect;
+    state.filledUjian.data[payload.index].iscorrect = payload.data.jawab_essy;
   },
   SLICE_RAGU_JAWABAN: function SLICE_RAGU_JAWABAN(state, payload) {
     state.filledUjian.data[payload.index].ragu_ragu = payload.data.ragu_ragu;
@@ -76911,9 +76963,25 @@ var actions = {
       });
     });
   },
-  updateRaguJawaban: function updateRaguJawaban(_ref2, payload) {
+  submitJawabanEssy: function submitJawabanEssy(_ref2, payload) {
     var commit = _ref2.commit,
         state = _ref2.state;
+    return new Promise(function (resolve, reject) {
+      _api_js__WEBPACK_IMPORTED_MODULE_0__["default"].post("/ujian", payload).then(function (response) {
+        commit('SLICE_DATA_RESP', response.data);
+        resolve(response.data);
+      })["catch"](function (error) {
+        if (error.response.status == 422) {
+          commit('SET_ERRORS', error.response.data.errors, {
+            root: true
+          });
+        }
+      });
+    });
+  },
+  updateRaguJawaban: function updateRaguJawaban(_ref3, payload) {
+    var commit = _ref3.commit,
+        state = _ref3.state;
     return new Promise(function (resolve, reject) {
       _api_js__WEBPACK_IMPORTED_MODULE_0__["default"].post("/ujian/ragu-ragu", payload).then(function (response) {
         commit('SLICE_RAGU_JAWABAN', response.data);
@@ -76921,16 +76989,16 @@ var actions = {
       })["catch"](function (error) {});
     });
   },
-  selesaiUjianPeserta: function selesaiUjianPeserta(_ref3, payload) {
-    var commit = _ref3.commit;
+  selesaiUjianPeserta: function selesaiUjianPeserta(_ref4, payload) {
+    var commit = _ref4.commit;
     return new Promise(function (resolve, reject) {
       _api_js__WEBPACK_IMPORTED_MODULE_0__["default"].post("/ujian/selesai", payload).then(function (response) {
         resolve(response.daa);
       });
     });
   },
-  getJawabanPeserta: function getJawabanPeserta(_ref4, payload) {
-    var commit = _ref4.commit;
+  getJawabanPeserta: function getJawabanPeserta(_ref5, payload) {
+    var commit = _ref5.commit;
     return new Promise(function (resolve, reject) {
       _api_js__WEBPACK_IMPORTED_MODULE_0__["default"].get("/ujian/jawaban/".concat(payload)).then(function (response) {
         commit('ASSIGN_DATA_JAWABAN', response.data);
@@ -76938,8 +77006,8 @@ var actions = {
       });
     });
   },
-  getUjianList: function getUjianList(_ref5, payload) {
-    var commit = _ref5.commit;
+  getUjianList: function getUjianList(_ref6, payload) {
+    var commit = _ref6.commit;
     return new Promise(function (resolve, reject) {
       _api_js__WEBPACK_IMPORTED_MODULE_0__["default"].post("/ujian/daftar").then(function (response) {
         commit('ASSIGN_DATA_LIST', response.data);
@@ -76947,24 +77015,24 @@ var actions = {
       });
     });
   },
-  takeFilled: function takeFilled(_ref6, payload) {
-    var commit = _ref6.commit;
+  takeFilled: function takeFilled(_ref7, payload) {
+    var commit = _ref7.commit;
     return new Promise(function (resolve, reject) {
       _api_js__WEBPACK_IMPORTED_MODULE_0__["default"].post("/ujian/filled", payload).then(function (response) {
         commit('FILLED_DATA_UJIAN', response.data);
       })["catch"](function (error) {});
     });
   },
-  updateWaktuSiswa: function updateWaktuSiswa(_ref7, payload) {
-    var commit = _ref7.commit;
+  updateWaktuSiswa: function updateWaktuSiswa(_ref8, payload) {
+    var commit = _ref8.commit;
     return new Promise(function (resolve, reject) {
       _api_js__WEBPACK_IMPORTED_MODULE_0__["default"].post("/ujian/sisa-waktu", payload).then(function (response) {
         resolve(response.data);
       })["catch"](function (error) {});
     });
   },
-  getPesertaDataUjian: function getPesertaDataUjian(_ref8, payload) {
-    var commit = _ref8.commit;
+  getPesertaDataUjian: function getPesertaDataUjian(_ref9, payload) {
+    var commit = _ref9.commit;
     return new Promise(function (resolve, reject) {
       _api_js__WEBPACK_IMPORTED_MODULE_0__["default"].post("/ujian/ujian-siswa-det", payload).then(function (response) {
         commit('ASSIGN_DATA_UJIAN', response.data);
@@ -76972,9 +77040,9 @@ var actions = {
       })["catch"](function (error) {});
     });
   },
-  tokenChecker: function tokenChecker(_ref9, payload) {
-    var commit = _ref9.commit,
-        state = _ref9.state;
+  tokenChecker: function tokenChecker(_ref10, payload) {
+    var commit = _ref10.commit,
+        state = _ref10.state;
     return new Promise(function (resolve, reject) {
       _api_js__WEBPACK_IMPORTED_MODULE_0__["default"].post("/ujian/cektoken", payload).then(function (response) {
         if (response.data.status == 'success') {
@@ -76987,9 +77055,9 @@ var actions = {
       })["catch"](function (error) {});
     });
   },
-  pesertaMulai: function pesertaMulai(_ref10, payload) {
-    var commit = _ref10.commit,
-        state = _ref10.state;
+  pesertaMulai: function pesertaMulai(_ref11, payload) {
+    var commit = _ref11.commit,
+        state = _ref11.state;
     return new Promise(function (resolve, reject) {
       _api_js__WEBPACK_IMPORTED_MODULE_0__["default"].post("/ujian/mulai-peserta", payload).then(function (response) {
         resolve(response.data);

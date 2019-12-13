@@ -25,6 +25,7 @@ const mutations = {
 	SLICE_DATA_RESP(state, payload) {
 		state.filledUjian.data[payload.index].jawab = payload.data.jawab
 		state.filledUjian.data[payload.index].iscorrect = payload.data.iscorrect
+		state.filledUjian.data[payload.index].iscorrect = payload.data.jawab_essy
 	},
 	SLICE_RAGU_JAWABAN(state, payload) {
 		state.filledUjian.data[payload.index].ragu_ragu = payload.data.ragu_ragu
@@ -57,6 +58,20 @@ const actions = {
 				}
 			})
 		})
+	},
+	submitJawabanEssy({ commit, state }, payload) {
+		return new Promise(( resolve, reject ) => {
+			$axios.post(`/ujian`, payload)
+			.then((response) => {
+				commit('SLICE_DATA_RESP', response.data)
+				resolve(response.data)
+			})
+			.catch((error) => {
+				if (error.response.status == 422) {
+					commit('SET_ERRORS', error.response.data.errors, { root: true })
+				}
+			})
+		}) 
 	},
 	updateRaguJawaban({ commit, state }, payload) {
 		return new Promise(( resolve, reject) => {
