@@ -112,7 +112,9 @@ class UjianController extends Controller
 
         
         $find = JawabanPeserta::with([
-            'soal','soal.jawabans'
+            'soal','soal.jawabans' => function($q) {
+                $q->inRandomOrder();
+            }
         ])->where([
             'peserta_id'    => $user_id,
             'jadwal_id'     => $jadwal_id,
@@ -122,11 +124,15 @@ class UjianController extends Controller
             $all = Banksoal::with(['pertanyaans','pertanyaans.jawabans'])->where('id',$id)->first();
 
             $max_soal = $all->jumlah_soal;
+            $max_essay = $all->jumlah_soal_esay;
             $i = 1;
             $collection = new Collection($all->pertanyaans);
             $perta = $collection->shuffle();
             
             foreach($perta as $p) {
+                if($p->tipe_soal != 1) {
+                    continue;
+                }
                 JawabanPeserta::create([
                     'peserta_id'    => $user_id, 
                     'banksoal_id'   => $id, 
@@ -139,6 +145,27 @@ class UjianController extends Controller
 
                 if ($i++ == $max_soal) break;
             }
+
+            $i = 1;
+            if ($max_essay > 0) {
+                foreach($perta as $p) {
+                    if($p->tipe_soal != 2) {
+                        continue;
+                    }
+                    
+                    JawabanPeserta::create([
+                        'peserta_id'    => $user_id, 
+                        'banksoal_id'   => $id, 
+                        'soal_id'       => $p->id, 
+                        'jawab'         => 0, 
+                        'iscorrect'     => 0,
+                        'jadwal_id'     => $jadwal_id,
+                        'ragu_ragu'     => 0
+                    ]);
+    
+                    if ($i++ == $max_essay) break;
+                }
+            }
             
             $detail = SiswaUjian::where([
                 'jadwal_id'     => $jadwal_id,
@@ -147,12 +174,14 @@ class UjianController extends Controller
 
 
             $find = JawabanPeserta::with([
-                'soal','soal.jawabans'
+                'soal','soal.jawabans' => function($q) {
+                    $q->inRandomOrder();
+                }
             ])->where([
                 'peserta_id'    => $user_id, 
                 'jadwal_id'     => $jadwal_id,
             ])->get();
-            
+    
             return response()->json(['data' => $find, 'detail' => $detail]);
         }
         
@@ -212,25 +241,28 @@ class UjianController extends Controller
         $salah = JawabanPeserta::where([
             'iscorrect'     => 0,
             'jadwal_id'     => $request->jadwal_id, 
-            'peserta_id'    => $request->peserta_id
-        ])->get();
+            'peserta_id'    => $request->peserta_id,
+            'jawab_essy'    => null
+        ])->get()->count();
+
         $benar = JawabanPeserta::where([
             'iscorrect'     => 1,
             'jadwal_id'     => $request->jadwal_id, 
             'peserta_id'    => $request->peserta_id
-        ])->get();
+        ])->get()->count();
+        
         $jml = JawabanPeserta::where([
             'jadwal_id'     => $request->jadwal_id, 
             'peserta_id'    => $request->peserta_id
-        ])->get();
+        ])->get()->count();
 
-        $hasil = (count($benar)/count($jml))*100;
+        $hasil = ($benar/$jml)*100;
 
         HasilUjian::create([
             'peserta_id'      => $request->peserta_id,
             'jadwal_id'       => $request->jadwal_id,
-            'jumlah_salah'    => count($salah),
-            'jumlah_benar'    => count($benar),
+            'jumlah_salah'    => $salah,
+            'jumlah_benar'    => $benar,
             'tidak_diisi'     => 0,
             'hasil'           => $hasil,
         ]);

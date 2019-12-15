@@ -28,7 +28,7 @@ class PesertaLoginController extends Controller
 
         $peserta = Peserta::where(['no_ujian' => $request->no_ujian,'password' => $request->password])->first();
         $aktif = UjianAktif::first();
-
+        
         if($peserta) {
             if($peserta->api_token != '') {
                 return response()->json(['status' => 'loggedin']);

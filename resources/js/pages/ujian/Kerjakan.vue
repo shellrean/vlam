@@ -64,7 +64,7 @@
 
 		<div class="side" v-show="sidebar">
 			<div class="inner-side">
-				<button type="button" class="btn my-1 rounded-0 w-2 mx-1" v-for="(fiel,index) in filleds" :class="{
+				<button type="button" class="btn my-1 rounded-0 w-2 mx-1" v-for="(fiel,index) in filleds" :key="index" :class="{
 					'btn-primary' : (fiel.jawab != 0), 
 					'btn-outline-primary' : (fiel.jawab == 0), 
 					'btn-warning' : (fiel.ragu_ragu == 1),

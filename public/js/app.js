@@ -54557,6 +54557,7 @@ var render = function() {
               return _c(
                 "button",
                 {
+                  key: index,
                   staticClass: "btn my-1 rounded-0 w-2 mx-1",
                   class: {
                     "btn-primary": fiel.jawab != 0,
