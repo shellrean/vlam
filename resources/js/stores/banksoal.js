@@ -36,7 +36,7 @@ const actions = {
 	},
 	getUjian({ commit, state }, payload) {
 		return new Promise(( resolve, reject) => {
-			$axios.get(`/ujian/${payload}`)
+			$axios.post(`/ujian/setter`,payload)
 			.then((response) => {
 				commit('ASSIGN_SOAL_UJIAN', response.data)
 				resolve(response.data)

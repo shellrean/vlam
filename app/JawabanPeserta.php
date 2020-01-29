@@ -11,7 +11,7 @@ class JawabanPeserta extends Model
     ];
 
     protected $hidden = [
-    	'iscorrect'
+    	'iscorrect','created_at','updated_at'
     ];
 
     public function soal()

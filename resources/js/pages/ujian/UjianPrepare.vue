@@ -79,7 +79,7 @@ export default {
 	    		name: 'ujian.while', 
 	    		params: { 
 	    			banksoal: this.jadwal.jadwal.banksoal_id, 
-	    			jadwal_id: this.jadwal.jadwal.id 
+	    			jadwal_id: this.jadwal.jadwal.id
 	    		} 
 	    	})
 	    },

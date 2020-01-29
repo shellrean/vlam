@@ -23,6 +23,7 @@ Route::group(['middlewarde' => 'peserta'], function() {
 	Route::get('/jadwal/aktif', 'API\UjianController@getUjianAktif');
 
 	Route::get('/ujian/{id}','API\UjianController@getsoal');
+	Route::post('/ujian/setter','API\UjianController@getsoal');
 	Route::post('/ujian','API\UjianController@store');
 	Route::get('/ujian/jawaban/{id}', 'API\UjianController@getJawabanPeserta');
 	Route::post('/ujian/filled', 'API\UjianController@filled');

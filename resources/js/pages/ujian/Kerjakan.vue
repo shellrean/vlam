@@ -10,7 +10,7 @@
 		    	<table class="table table-borderless table-sm">
 		    		<tr v-if="audio != ''">
 		    			<td colspan="2">
-		    				<audio-player :file="'http://192.168.1.200/storage/audio/'+audio"></audio-player>
+		    				<audio-player :file="'http://192.168.0.200/storage/audio/'+audio"></audio-player>
 		    			</td>
 		    		</tr>
 		    		<tr>
@@ -131,7 +131,10 @@ export default {
 		...mapActions('banksoal', ['getUjian']),
 		...mapActions('ujian', ['submitJawaban','submitJawabanEssy','takeFilled','updateWaktuSiswa','updateRaguJawaban','selesaiUjianPeserta']),
 		getAllSoal() {
-			this.getUjian(this.$route.params.banksoal)
+			this.getUjian({
+				banksoal: this.$route.params.banksoal,
+				peserta: localStorage.getItem('id')
+			})
 			.then((resp) => {
 
 			})
@@ -256,7 +259,7 @@ export default {
 			this.time = val.sisa_waktu
 			this.interval = setInterval( () => {
 				if (this.time > 0) {
-					this.updateSisaWaktu(this.time)
+					// this.updateSisaWaktu(this.time)
 				} else {
 					this.selesai()
 				}

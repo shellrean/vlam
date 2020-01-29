@@ -11,6 +11,6 @@ class JawabanSoal extends Model
     ];
 
     protected $hidden = [
-    	'correct'
+    	'correct','created_at','updated_at'
     ];
 }

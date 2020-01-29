@@ -18537,7 +18537,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   }),
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('banksoal', ['getUjian']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('ujian', ['submitJawaban', 'submitJawabanEssy', 'takeFilled', 'updateWaktuSiswa', 'updateRaguJawaban', 'selesaiUjianPeserta']), {
     getAllSoal: function getAllSoal() {
-      this.getUjian(this.$route.params.banksoal).then(function (resp) {});
+      this.getUjian({
+        banksoal: this.$route.params.banksoal,
+        peserta: localStorage.getItem('id')
+      }).then(function (resp) {});
     },
     filledAllSoal: function filledAllSoal() {
       var payld = {
@@ -18653,8 +18656,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       this.time = val.sisa_waktu;
       this.interval = setInterval(function () {
-        if (_this2.time > 0) {
-          _this2.updateSisaWaktu(_this2.time);
+        if (_this2.time > 0) {// this.updateSisaWaktu(this.time)
         } else {
           _this2.selesai();
         }
@@ -54206,7 +54208,7 @@ var render = function() {
                             _c("audio-player", {
                               attrs: {
                                 file:
-                                  "http://192.168.1.200/storage/audio/" +
+                                  "http://192.168.0.200/storage/audio/" +
                                   _vm.audio
                               }
                             })
@@ -76654,7 +76656,7 @@ var actions = {
     var commit = _ref2.commit,
         state = _ref2.state;
     return new Promise(function (resolve, reject) {
-      _api_js__WEBPACK_IMPORTED_MODULE_0__["default"].get("/ujian/".concat(payload)).then(function (response) {
+      _api_js__WEBPACK_IMPORTED_MODULE_0__["default"].post("/ujian/setter", payload).then(function (response) {
         commit('ASSIGN_SOAL_UJIAN', response.data);
         resolve(response.data);
       });
@@ -77139,8 +77141,8 @@ var actions = {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! D:\data.center.laravel\vlam\resources\js\app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! D:\data.center.laravel\vlam\resources\sass\app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! E:\data.center.laravel\vlam\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! E:\data.center.laravel\vlam\resources\sass\app.scss */"./resources/sass/app.scss");
 
 
 /***/ })
