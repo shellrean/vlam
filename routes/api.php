@@ -33,5 +33,7 @@ Route::group(['middlewarde' => 'peserta'], function() {
 	Route::post('/ujian/selesai', 'API\UjianController@selesai');
 	Route::post('/ujian/cektoken','API\UjianController@cekToken');
 
+	Route::get('/profile', 'Auth\PesertaLoginController@profile');
+
 	Route::post('/ujian/mulai-peserta', 'API\UjianController@mulaiPeserta');
 });

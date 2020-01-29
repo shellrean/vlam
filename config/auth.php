@@ -48,10 +48,15 @@ return [
         ],
 
         'peserta'  => [
+          'driver'  => 'session',
+          'provider' => 'pesertas'
+        ],
+
+        'peserta-api' => [
           'driver'  => 'token',
           'provider' => 'pesertas',
-          'hash'       => false
-        ],
+          'hash' => false,
+        ]
     ],
 
     /*

@@ -13,13 +13,17 @@
 		          		<td width="200px">No ujian</td>
 		          		<td v-text="peserta.no_ujian"></td>
 		          	</tr>
+		          	<tr>
+		          		<td>Nama peserta</td>
+		          		<td v-text="peserta.nama"></td>
+		          	</tr>
 		          	<tr v-if="jadwal.banksoal">
 		          		<td>Mata pelajaran</td>
 		          		<td v-text="jadwal.banksoal.matpel.nama"></td>
 		          	</tr>
 		          	<tr v-if="ujian.status_ujian != 1">
 		          		<td>Token</td>
-		          		<td v-if="jadwal.token">
+		          		<td>
 		          			<div class="input-group mb-3">
 							  <input type="text" class="form-control rounded-0" placeholder="Masukkan token" v-model="token_ujian">
 							  <div class="input-group-append">
@@ -66,7 +70,7 @@
 	    },
 	    computed: {
 	    	...mapState('jadwal', {
-	    		jadwal: state => state.banksoalAktif.data
+	    		jadwal: state => state.banksoalAktif.data,
 	    	}),
 	    	...mapState('user', {
 		        peserta: state => state.pesertaDetail

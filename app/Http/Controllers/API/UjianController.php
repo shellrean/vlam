@@ -14,6 +14,7 @@ use App\HasilUjian;
 use App\JawabanSoal;
 use App\UjianAktif;
 use App\Peserta;
+use App\Matpel;
 
 use Carbon\Carbon;
 
@@ -34,7 +35,7 @@ class UjianController extends Controller
             $all = Banksoal::with(['pertanyaans','pertanyaans.jawabans'])->where('id',$id)->first();
         }
         else {
-            $peserta = Peserta::find($request->peserta);
+            $peserta = Peserta::find(auth()->guard('peserta-api')->user()->id);
             $jursan = $peserta->jurusan_id;
             $banksols = DB::table('banksoals')
                 ->join('matpels', function($q) {
@@ -125,7 +126,7 @@ class UjianController extends Controller
     {
         $id = $request->banksoal;
         $jadwal_id = $request->jadwal_id;
-        $user_id = $request->peserta_id;
+        $user_id = auth()->guard('peserta-api')->user()->id;
 
         
         $find = JawabanPeserta::with([
@@ -223,49 +224,12 @@ class UjianController extends Controller
 
         $deUjian = Jadwal::find($request->jadwal_id);
 
-        $start = Carbon::createFromFormat('H:s:i', $ujian->mulai_ujian);
-        $now = Carbon::createFromFormat('H:s:i', Carbon::now()->format('H:s:i'));
+        $start = Carbon::createFromFormat('H:i:s', $ujian->mulai_ujian);
+        $now = Carbon::createFromFormat('H:i:s', Carbon::now()->format('H:i:s'));
 
         $diff_in_minutes = $start->diffInSeconds($now);
 
         if($diff_in_minutes > $deUjian->lama) {
-            $ujian = SiswaUjian::where([
-                'jadwal_id'     => $request->jadwal_id, 
-                'peserta_id'    => $request->peserta_id
-            ])->first();
-    
-            $ujian->status_ujian = 1;
-            $ujian->save();
-    
-            $salah = JawabanPeserta::where([
-                'iscorrect'     => 0,
-                'jadwal_id'     => $request->jadwal_id, 
-                'peserta_id'    => $request->peserta_id,
-                'jawab_essy'    => null
-            ])->get()->count();
-    
-            $benar = JawabanPeserta::where([
-                'iscorrect'     => 1,
-                'jadwal_id'     => $request->jadwal_id, 
-                'peserta_id'    => $request->peserta_id
-            ])->get()->count();
-            
-            $jml = JawabanPeserta::where([
-                'jadwal_id'     => $request->jadwal_id, 
-                'peserta_id'    => $request->peserta_id
-            ])->get()->count();
-    
-            $hasil = ($benar/$jml)*100;
-    
-            HasilUjian::create([
-                'peserta_id'      => $request->peserta_id,
-                'jadwal_id'       => $request->jadwal_id,
-                'jumlah_salah'    => $salah,
-                'jumlah_benar'    => $benar,
-                'tidak_diisi'     => 0,
-                'hasil'           => $hasil,
-            ]);
-            
             return response()->json(['data' => $find, 'detail' => $ujian]);
         }
         
@@ -306,57 +270,6 @@ class UjianController extends Controller
 
             return response()->json(['data' => $data]);
         }
-
-        $deUjian = Jadwal::find($request->jadwal_id);
-
-        $start = Carbon::createFromFormat('H:s:i', $ujian->mulai_ujian);
-        $now = Carbon::createFromFormat('H:s:i', Carbon::now()->format('H:s:i'));
-
-        $diff_in_minutes = $start->diffInSeconds($now);
-
-        if($diff_in_minutes > $deUjian->lama) {
-            $ujian = SiswaUjian::where([
-                'jadwal_id'     => $request->jadwal_id, 
-                'peserta_id'    => $request->peserta_id
-            ])->first();
-    
-            $ujian->status_ujian = 1;
-            $ujian->save();
-    
-            $salah = JawabanPeserta::where([
-                'iscorrect'     => 0,
-                'jadwal_id'     => $request->jadwal_id, 
-                'peserta_id'    => $request->peserta_id,
-                'jawab_essy'    => null
-            ])->get()->count();
-    
-            $benar = JawabanPeserta::where([
-                'iscorrect'     => 1,
-                'jadwal_id'     => $request->jadwal_id, 
-                'peserta_id'    => $request->peserta_id
-            ])->get()->count();
-            
-            $jml = JawabanPeserta::where([
-                'jadwal_id'     => $request->jadwal_id, 
-                'peserta_id'    => $request->peserta_id
-            ])->get()->count();
-    
-            $hasil = ($benar/$jml)*100;
-    
-            HasilUjian::create([
-                'peserta_id'      => $request->peserta_id,
-                'jadwal_id'       => $request->jadwal_id,
-                'jumlah_salah'    => $salah,
-                'jumlah_benar'    => $benar,
-                'tidak_diisi'     => 0,
-                'hasil'           => $hasil,
-            ]);
-            
-            return response()->json(['data' => $ujian]);
-        }
-        
-        $ujian->sisa_waktu = $deUjian->lama-$diff_in_minutes;
-        $ujian->save();
 
         return response()->json(['data' => $ujian]);
     }
@@ -407,8 +320,8 @@ class UjianController extends Controller
     {
         $jadwal = UjianAktif::first();
         if($jadwal) {
-            $to = \Carbon\Carbon::createFromFormat('Y-m-d H:s:i', now());
-            $from = $jadwal['updated_at']->format('Y-m-d H:s:i');
+            $to = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', now());
+            $from = $jadwal['updated_at']->format('Y-m-d H:i:s');
             $differ = $to->diffInSeconds($from);
 
             if($differ > 900) {
@@ -428,15 +341,23 @@ class UjianController extends Controller
 
     public function getUjianAktif()
     {
-        $jadwal = UjianAktif::with(['jadwal','jadwal.banksoal','jadwal.banksoal.matpel'])->first();
+        $jadwal = UjianAktif::with(['jadwal','jadwal.banksoal'])
+        ->select('ujian_id')->first();
 
-        return response()->json(['data' => $jadwal]);
+        if($jadwal->jadwal->banksoal_id == 0) {
+            $matpel = Matpel::where('jurusan_id', '=', auth()->guard('peserta-api')->user()->jurusan_id)->first();
+        }
+        else {
+            $matpel = Matpel::find($jadwal->jadwal->banksoal->matpel_id);
+        }
+
+        return response()->json(['data' => $jadwal, 'matpel' => $matpel]);
     }
 
     public function mulaiPeserta(Request $request)
     {
         $peserta = SiswaUjian::where(['peserta_id' => $request->peserta_id])->first();
-        $peserta->mulai_ujian = now()->format('H:s:i');
+        $peserta->mulai_ujian = now()->format('H:i:s');
         $peserta->status_ujian = 3;
         $peserta->save();
 

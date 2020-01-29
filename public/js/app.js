@@ -18360,16 +18360,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var _this = this;
 
       return new Promise(function (resolve, reject) {
-        _this.logoutPeserta({
-          no_ujian: localStorage.getItem('no_ujian')
-        }).then(function () {
+        _this.logoutPeserta().then(function () {
           localStorage.removeItem('token');
-          localStorage.removeItem('no_ujian');
-          localStorage.removeItem('nama');
-          localStorage.removeItem('id');
+          resolve();
         });
-
-        resolve();
       }).then(function () {
         _this.$store.state.token = localStorage.getItem('token');
 
@@ -18558,19 +18552,37 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }).then(function (resp) {});
     },
     selectOption: function selectOption(index) {
+      var _this = this;
+
       var fill = this.filleds[this.questionIndex];
       this.submitJawaban({
         jawaban_id: this.filleds[this.questionIndex].id,
         jawab: this.filleds[this.questionIndex].soal.jawabans[index].id,
         correct: this.filleds[this.questionIndex].soal.jawabans[index].correct,
         index: this.questionIndex
+      })["catch"](function (error) {
+        _this.$notify({
+          group: 'foo',
+          title: 'Error',
+          type: 'error',
+          text: 'Sepertinya anda terlepas dari koneksi.'
+        });
       });
     },
     raguRagu: function raguRagu(val) {
+      var _this2 = this;
+
       this.updateRaguJawaban({
         ragu_ragu: val,
         index: this.questionIndex,
         jawaban_id: this.filleds[this.questionIndex].id
+      })["catch"](function (error) {
+        _this2.$notify({
+          group: 'foo',
+          title: 'Error',
+          type: 'error',
+          text: 'Sepertinya anda terlepas dari koneksi.'
+        });
       });
     },
     selesai: function selesai() {
@@ -18596,11 +18608,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.questionIndex = index;
     },
     start: function start() {
-      var _this = this;
+      var _this3 = this;
 
       this.timer = setInterval(function () {
-        if (_this.time > 0) {
-          _this.time--;
+        if (_this3.time > 0) {
+          _this3.time--;
         } else {}
       }, 1000);
     },
@@ -18652,13 +18664,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }
     },
     detail: function detail(val) {
-      var _this2 = this;
+      var _this4 = this;
 
       this.time = val.sisa_waktu;
       this.interval = setInterval(function () {
-        if (_this2.time > 0) {// this.updateSisaWaktu(this.time)
+        if (_this4.time > 0) {// this.updateSisaWaktu(this.time)
         } else {
-          _this2.selesai();
+          _this4.selesai();
         }
       }, 5000);
     },
@@ -18886,6 +18898,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'KonfirmUjian',
@@ -19027,6 +19043,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     mulai: function mulai(state) {
       return state.banksoalAktif.data.jadwal.mulai;
+    },
+    matpel: function matpel(state) {
+      return state.matpelAktif;
     }
   }), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])('user', {
     peserta: function peserta(state) {
@@ -55005,6 +55024,14 @@ var render = function() {
                       })
                     ]),
                     _vm._v(" "),
+                    _c("tr", [
+                      _c("td", [_vm._v("Nama peserta")]),
+                      _vm._v(" "),
+                      _c("td", {
+                        domProps: { textContent: _vm._s(_vm.peserta.nama) }
+                      })
+                    ]),
+                    _vm._v(" "),
                     _vm.jadwal.banksoal
                       ? _c("tr", [
                           _c("td", [_vm._v("Mata pelajaran")]),
@@ -55023,73 +55050,59 @@ var render = function() {
                       ? _c("tr", [
                           _c("td", [_vm._v("Token")]),
                           _vm._v(" "),
-                          _vm.jadwal.token
-                            ? _c("td", [
-                                _c("div", { staticClass: "input-group mb-3" }, [
-                                  _c("input", {
-                                    directives: [
-                                      {
-                                        name: "model",
-                                        rawName: "v-model",
-                                        value: _vm.token_ujian,
-                                        expression: "token_ujian"
-                                      }
-                                    ],
-                                    staticClass: "form-control rounded-0",
-                                    attrs: {
-                                      type: "text",
-                                      placeholder: "Masukkan token"
-                                    },
-                                    domProps: { value: _vm.token_ujian },
-                                    on: {
-                                      input: function($event) {
-                                        if ($event.target.composing) {
-                                          return
-                                        }
-                                        _vm.token_ujian = $event.target.value
-                                      }
+                          _c("td", [
+                            _c("div", { staticClass: "input-group mb-3" }, [
+                              _c("input", {
+                                directives: [
+                                  {
+                                    name: "model",
+                                    rawName: "v-model",
+                                    value: _vm.token_ujian,
+                                    expression: "token_ujian"
+                                  }
+                                ],
+                                staticClass: "form-control rounded-0",
+                                attrs: {
+                                  type: "text",
+                                  placeholder: "Masukkan token"
+                                },
+                                domProps: { value: _vm.token_ujian },
+                                on: {
+                                  input: function($event) {
+                                    if ($event.target.composing) {
+                                      return
                                     }
-                                  }),
-                                  _vm._v(" "),
-                                  _c(
-                                    "div",
-                                    { staticClass: "input-group-append" },
-                                    [
-                                      _c(
-                                        "button",
-                                        {
-                                          staticClass:
-                                            "btn btn-outline-primary rounded-0",
-                                          attrs: { type: "button" },
-                                          on: { click: _vm.cekToken }
-                                        },
-                                        [_vm._v("Submit")]
-                                      )
-                                    ]
-                                  )
-                                ]),
-                                _vm._v(" "),
-                                _vm.invalidToken.token
-                                  ? _c(
-                                      "small",
-                                      { staticClass: "text-danger" },
-                                      [
-                                        _vm._v(
-                                          "Token tidak sesuai dengan pusat"
-                                        )
-                                      ]
-                                    )
-                                  : _vm._e(),
-                                _vm._v(" "),
-                                _vm.invalidToken.release
-                                  ? _c(
-                                      "small",
-                                      { staticClass: "text-danger" },
-                                      [_vm._v("Status token belum dirilis")]
-                                    )
-                                  : _vm._e()
+                                    _vm.token_ujian = $event.target.value
+                                  }
+                                }
+                              }),
+                              _vm._v(" "),
+                              _c("div", { staticClass: "input-group-append" }, [
+                                _c(
+                                  "button",
+                                  {
+                                    staticClass:
+                                      "btn btn-outline-primary rounded-0",
+                                    attrs: { type: "button" },
+                                    on: { click: _vm.cekToken }
+                                  },
+                                  [_vm._v("Submit")]
+                                )
                               ])
-                            : _vm._e()
+                            ]),
+                            _vm._v(" "),
+                            _vm.invalidToken.token
+                              ? _c("small", { staticClass: "text-danger" }, [
+                                  _vm._v("Token tidak sesuai dengan pusat")
+                                ])
+                              : _vm._e(),
+                            _vm._v(" "),
+                            _vm.invalidToken.release
+                              ? _c("small", { staticClass: "text-danger" }, [
+                                  _vm._v("Status token belum dirilis")
+                                ])
+                              : _vm._e()
+                          ])
                         ])
                       : _vm._e()
                   ])
@@ -55188,12 +55201,10 @@ var render = function() {
                     ]),
                     _vm._v(" "),
                     _c("tr", [
-                      _c("td", [_vm._v("Ujian ditutup")]),
+                      _c("td", [_vm._v("Mata ujian")]),
                       _vm._v(" "),
                       _c("td", {
-                        domProps: {
-                          textContent: _vm._s(_vm.jadwal.jadwal.berakhir)
-                        }
+                        domProps: { textContent: _vm._s(_vm.matpel.nama) }
                       })
                     ])
                   ])
@@ -76536,9 +76547,6 @@ var actions = {
       _api_js__WEBPACK_IMPORTED_MODULE_0__["default"].post('/logedin', payload).then(function (response) {
         if (response.data.status == 'success') {
           localStorage.setItem('token', response.data.data.api_token);
-          localStorage.setItem('nama', response.data.data.nama);
-          localStorage.setItem('no_ujian', response.data.data.no_ujian);
-          localStorage.setItem('id', response.data.data.id);
           commit('SET_TOKEN', response.data.data, {
             root: true
           });
@@ -76590,7 +76598,7 @@ var actions = {
   logoutPeserta: function logoutPeserta(_ref2, payload) {
     var commit = _ref2.commit;
     return new Promise(function (resolve, reject) {
-      _api_js__WEBPACK_IMPORTED_MODULE_0__["default"].post('/logout', payload).then(function (response) {
+      _api_js__WEBPACK_IMPORTED_MODULE_0__["default"].post('/logout').then(function (response) {
         resolve(response.data);
       });
     });
@@ -76697,7 +76705,8 @@ __webpack_require__.r(__webpack_exports__);
 var state = function state() {
   return {
     banksoalHariIni: [],
-    banksoalAktif: ''
+    banksoalAktif: '',
+    matpelAktif: ''
   };
 };
 
@@ -76707,6 +76716,9 @@ var mutations = {
   },
   ASSIGN_UJIAN_AKTIF: function ASSIGN_UJIAN_AKTIF(state, payload) {
     state.banksoalAktif = payload;
+  },
+  ASSIGN_MATPEL_AKTIF: function ASSIGN_MATPEL_AKTIF(state, payload) {
+    state.matpelAktif = payload;
   }
 };
 var actions = {
@@ -76725,7 +76737,8 @@ var actions = {
     return new Promise(function (resolve, reject) {
       _api_js__WEBPACK_IMPORTED_MODULE_0__["default"].get("/jadwal/aktif", payload).then(function (response) {
         commit('ASSIGN_UJIAN_AKTIF', response.data);
-        resolve(response.data);
+        commit('ASSIGN_MATPEL_AKTIF', response.data.matpel);
+        resolve(response);
       });
     });
   }
@@ -77105,12 +77118,10 @@ var actions = {
     var commit = _ref.commit,
         payload = _ref.payload;
     return new Promise(function (resolve, reject) {
-      var data = {
-        id: localStorage.getItem('id'),
-        nama: localStorage.getItem('nama'),
-        no_ujian: localStorage.getItem('no_ujian')
-      };
-      commit('ASSIGN_PESERTA_DETAIL', data);
+      _api_js__WEBPACK_IMPORTED_MODULE_0__["default"].get("/profile").then(function (response) {
+        commit('ASSIGN_PESERTA_DETAIL', response.data.data);
+        resolve(response.data);
+      });
     });
   }
 };
@@ -77141,8 +77152,8 @@ var actions = {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! E:\data.center.laravel\vlam\resources\js\app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! E:\data.center.laravel\vlam\resources\sass\app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! D:\data_center\server4\vlam\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! D:\data_center\server4\vlam\resources\sass\app.scss */"./resources/sass/app.scss");
 
 
 /***/ })

@@ -16,10 +16,10 @@
 		          	<tr>
 		          		<td>Durasi</td>
 		          		<td v-text="durasi"></td>
-		          	</tr>	
+		          	</tr>
 		          	<tr>
-		          		<td>Ujian ditutup</td>
-		          		<td v-text="jadwal.jadwal.berakhir"></td>
+		          		<td>Mata ujian</td>
+		          		<td v-text="matpel.nama"></td>
 		          	</tr>
 		          </table>
 		        </div> 
@@ -62,7 +62,8 @@ export default {
 	computed: {
 		...mapState('jadwal', {
 			jadwal: state => state.banksoalAktif.data,
-			mulai: state => state.banksoalAktif.data.jadwal.mulai
+			mulai: state => state.banksoalAktif.data.jadwal.mulai,
+			matpel: state => state.matpelAktif
 		}),
 		...mapState('user', {
 		    peserta: state => state.pesertaDetail

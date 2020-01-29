@@ -169,6 +169,14 @@ export default {
 	        	correct: this.filleds[this.questionIndex].soal.jawabans[index].correct,
 	        	index : this.questionIndex
 	        })
+	        .catch((error) => {
+	        	this.$notify({
+                  group: 'foo',
+                  title: 'Error',
+                  type: 'error',
+                  text: 'Sepertinya anda terlepas dari koneksi.'
+                })
+	        })
 		},
 		raguRagu(val) {
 			this.updateRaguJawaban({
@@ -176,6 +184,14 @@ export default {
 				index: this.questionIndex,
 				jawaban_id : this.filleds[this.questionIndex].id
 			})
+			.catch((error) => {
+	        	this.$notify({
+                  group: 'foo',
+                  title: 'Error',
+                  type: 'error',
+                  text: 'Sepertinya anda terlepas dari koneksi.'
+                })
+	        })
 		},
 		selesai() {
 			this.selesaiUjianPeserta({

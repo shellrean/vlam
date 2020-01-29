@@ -18,9 +18,6 @@ const actions = {
 			.then((response) => {
 				if (response.data.status == 'success') {
 					localStorage.setItem('token',response.data.data.api_token)
-					localStorage.setItem('nama',response.data.data.nama)
-					localStorage.setItem('no_ujian',response.data.data.no_ujian)
-					localStorage.setItem('id',response.data.data.id)
 					commit('SET_TOKEN',response.data.data, { root: true })
 					commit('SET_LOADING',false, { root: true })
 				}
@@ -48,7 +45,7 @@ const actions = {
 	},
 	logoutPeserta({ commit }, payload) {
 		return new Promise((resolve, reject) => {
-			$axios.post('/logout', payload) 
+			$axios.post('/logout') 
 			.then((response) => {
 				resolve(response.data)
 			}) 

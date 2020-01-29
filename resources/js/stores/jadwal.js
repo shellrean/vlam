@@ -2,7 +2,8 @@ import $axios from '../api.js'
 
 const state = () => ({
 	banksoalHariIni: [],
-	banksoalAktif: ''
+	banksoalAktif: '',
+	matpelAktif: ''
 })
 
 const mutations = {
@@ -11,6 +12,9 @@ const mutations = {
 	},
 	ASSIGN_UJIAN_AKTIF(state, payload) {
 		state.banksoalAktif = payload
+	},
+	ASSIGN_MATPEL_AKTIF(state, payload) {
+		state.matpelAktif = payload
 	}
 }
 
@@ -29,7 +33,8 @@ const actions = {
 			$axios.get(`/jadwal/aktif`, payload)
 			.then((response) => {
 				commit('ASSIGN_UJIAN_AKTIF', response.data)
-				resolve(response.data)
+				commit('ASSIGN_MATPEL_AKTIF', response.data.matpel)
+				resolve(response)
 			})
 		})
 	}

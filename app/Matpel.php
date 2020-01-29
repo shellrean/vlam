@@ -10,5 +10,7 @@ class Matpel extends Model
     	'kode_mapel','nama'
     ];
 
-    
+   	protected $hidden = [
+   		'created_at','updated_at'
+   	];
 }

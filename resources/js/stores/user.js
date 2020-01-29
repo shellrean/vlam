@@ -13,12 +13,12 @@ const mutations = {
 const actions = {
 	setPesertaDetail({ commit , payload}) {
 		return new Promise((resolve, reject) => {
-			const data = {
-				id: localStorage.getItem('id'),
-				nama: localStorage.getItem('nama'),
-				no_ujian: localStorage.getItem('no_ujian')
-			}
-			commit('ASSIGN_PESERTA_DETAIL',data)
+			$axios.get(`/profile`)
+			.then((response) => {
+				commit('ASSIGN_PESERTA_DETAIL',response.data.data)
+				resolve(response.data)
+			})
+
 		})
 	}
 }
